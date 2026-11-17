@@ -62,4 +62,19 @@ Answer: Unreturned tools just show up as maximum late fees (value of the tool) o
 
 Question: If there is a reservation and a tool was returned inoperative will the future reservations be pushed back or the current one overwritten?
 Answer: The system should be built so that clerks can note if a tool needs servicing. They should be able to describe what needs to be done and mark the tool as "out of service". This doesn't affect the wait list; they just have to wait until the tool is marked "in service" before they are allowed to borrow again.
+
+Question: Does the existing API provide patron age and account standing or only card validity? If only validity, should we have everyone create a new account with age verification process? 
+Answer: The API also has provided metadata about the borrower. In any case, we check age when we checkout because you need an ID to borrow. 
+
+Question: How should conflicts be handled when someone is on the tool waitlist and the person currently using it wants to renew it? 
+Answer: Borrowers cannot renew if there is anyone on the waitlist. 
+
+Question: How long do we wait until we list a tool as unreturned? 
+Answer: Tools not returned beyond the due date are immediately marked as unreturned. 
+
+Question: Is the lost tool charge separate from the $20 overdue fee cap? 
+Answer: No—the late fee cap is it. 
+
+Question: Does the client want a borrower to have a personal dashboard or just a checkout process? 
+Answer: A dashboard showing the rental history and status would be great (how many days left on the loan, fees, etc.)
 ``` 
