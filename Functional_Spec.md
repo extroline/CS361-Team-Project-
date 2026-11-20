@@ -107,34 +107,181 @@ flowchart LR
     Patron --- UC6
     Patron --- UC7
 ```
+
 ### Library Employee Use-Case Diagram
 
-This diagram shows the administrative functions available to library employees, including verifying patron eligibility, processing checkouts and returns, approving renewals, managing inventory and reservations, tracking overdue tools, processing payments, and generating reports.
+This diagram shows the functions available to library employees: processing checkouts and returns, approving renewals, managing inventory, reservations, and waitlists, tracking unreturned tools and fees, recording payments, and generating reports. Checkout always includes verifying patron eligibility, which uses the county library's existing API to validate the patron's library card. Flagging a tool as out of service is a separate action that an employee can take during a return or while managing inventory. All library employees have the same administrative permissions.
 
 ```mermaid
-
-flowchart RL
+flowchart LR
     Employee["Library Employee"]
+    API["County Library API"]
 
     subgraph System["Tool Lending Library System"]
-        UC1(["Verify Patron Eligibility"])
-        UC2(["Process Tool Checkouts"])
-        UC3(["Process Returns / Inspections"])
-        UC4(["Approve / Deny Renewals"])
-        UC5(["Manage Tool Inventory"])
-        UC6(["Manage Reservations / Waitlists"])
-        UC7(["Track Overdue Tools / Fees"])
-        UC8(["Process / Record Fee Payments"])
-        UC9(["Generate Reports"])
+        E1(["E1 Verify Patron Eligibility"])
+        E2(["E2 Process Checkout"])
+        E3(["E3 Process Return / Inspection"])
+        E4(["E4 Approve / Deny Renewals"])
+        E5(["E5 Manage Tool Inventory"])
+        E6(["E6 Manage Reservations / Waitlists"])
+        E7(["E7 Track Unreturned Tools / Fees"])
+        E8(["E8 Process / Record Fee Payments"])
+        E9(["E9 Generate Reports"])
+        E10(["E10 Flag Tool Out of Service"])
     end
 
-    Employee --- UC1
-    Employee --- UC2
-    Employee --- UC3
-    Employee --- UC4
-    Employee --- UC5
-    Employee --- UC6
-    Employee --- UC7
-    Employee --- UC8
-    Employee --- UC9
+    Employee --- E2
+    Employee --- E3
+    Employee --- E4
+    Employee --- E5
+    Employee --- E6
+    Employee --- E7
+    Employee --- E8
+    Employee --- E9
+
+    E2 -.->|includes| E1
+    E10 -.->|extends| E3
+    E10 -.->|extends| E5
+    E1 --- API
 ```
+
+## Library Employee Use Cases
+ 
+ 
+| ID | Use case | Relationship |
+|---|---|---|
+| E1 | Verify Patron Eligibility | Included by E2. Uses the County Library API. |
+| E2 | Process Checkout | Includes E1. |
+| E3 | Process Return / Inspection | Extended by E10. |
+| E4 | Approve / Deny Renewals | |
+| E5 | Manage Tool Inventory | Extended by E10. |
+| E6 | Manage Reservations / Waitlists | |
+| E7 | Track Unreturned Tools / Fees | |
+| E8 | Process / Record Fee Payments | |
+| E9 | Generate Reports | |
+| E10 | Flag Tool Out of Service | Extends E3 and E5. |
+ 
+### E1 Verify Patron Eligibility
+ 
+- **Actors:** Employee, County Library API
+- **Included by:** E2
+- **Precondition:** The patron is present with their library card and ID.
+- **Main flow:** Employee confirms all of the following:
+  1. The library card is valid (County Library API).
+  2. The patron has an account and a signed liability waiver.
+  3. The patron's ID shows they are 18 or older.
+  4. The patron has fewer than 5 tools checked out.
+  5. The patron has no unreturned tools.
+- **Alternate flow:** Any check fails: the employee refuses the checkout.
+- **Postcondition:** The patron is eligible or refused.
+### E2 Process Checkout
+ 
+- **Actor:** Employee
+- **Includes:** E1
+- **Precondition:** The patron is present with their library card and ID.
+- **Main flow:**
+  1. Employee finds the patron and performs E1.
+  2. Employee scans the tool's barcode.
+  3. Employee sets the due date, at most 14 days out.
+  4. System records the borrower, checkout date, and due date, and marks the tool Checked Out.
+  5. If the patron held a reservation for this tool type, the system marks it fulfilled.
+- **Alternate flows:**
+  - E1 fails: the checkout is refused.
+  - Tool is Out of Service, or on hold for another patron: the system rejects the scan.
+  - Tool is a kit: it counts as one tool toward the 5-tool limit.
+- **Postcondition:** The loan and due date appear on the patron's dashboard.
+### E3 Process Return / Inspection
+ 
+- **Actor:** Employee
+- **Extended by:** E10
+- **Precondition:** The tool is checked out.
+- **Main flow:**
+  1. Employee scans the tool's barcode.
+  2. Employee inspects the tool. For a kit, the employee checks every component against the kit's inventory label.
+  3. Tool is in good condition: the employee completes the return, and the tool becomes Available.
+  4. If the return is late, accrued fees stay on the patron's account.
+- **Alternate flows:**
+  - Tool is damaged or has missing parts: the employee completes the return and performs E10.
+  - Simple consumables are used up: the employee replaces them. Repairs go to tech staff, outside this system.
+  - Tool was Unreturned: the return still completes. Fees stay on the account.
+- **Postcondition:** The loan is Returned. If the tool is Available and a waitlist exists, the front patron's 3-day hold starts.
+### E4 Approve / Deny Renewals
+ 
+- **Actor:** Employee
+- **Precondition:** A patron has submitted a renewal request.
+- **Main flow:**
+  1. Employee opens the pending request.
+  2. Employee confirms the loan has not been renewed and no patron is on the waitlist for the tool.
+  3. Employee approves. The due date extends by the original checkout period and the patron is emailed.
+- **Alternate flow:** Employee denies the request, with a reason. The patron is emailed.
+- **Postcondition:** The loan has a new due date, or is unchanged.
+### E5 Manage Tool Inventory
+ 
+- **Actor:** Employee
+- **Extended by:** E10
+- **Main flow (add tools):**
+  1. Employee opens the inventory section of the administrative dashboard.
+  2. Employee enters the tool's name, category, fee class, replacement value, and whether it is a kit.
+  3. Employee enters each unit's unique internal ID and barcode.
+  4. System adds the tools as Available.
+- **Alternate flows:**
+  - Update: employee edits a tool's information.
+  - Flag for maintenance: employee performs E10.
+  - Retire: employee retires a tool that is no longer suitable for lending. A checked-out tool cannot be retired until it is returned.
+- **Postcondition:** The inventory reflects the change.
+### E6 Manage Reservations / Waitlists
+ 
+- **Actor:** Employee
+- **Main flow:**
+  1. Employee opens the waitlist for a tool type.
+  2. At a patron's request, employee creates a reservation or cancels one on their behalf.
+- **Postcondition:** The waitlist and the patron's dashboard are updated.
+### E7 Track Unreturned Tools / Fees
+ 
+- **Actor:** Employee
+- **Main flow:**
+  1. Employee opens the unreturned-tools view in the administrative dashboard.
+  2. System shows each unreturned loan with patron, due date, and accrued fee.
+- **System behavior:**
+  - A loan becomes Unreturned as soon as its due date passes.
+  - The patron is emailed a reminder on the due date and every day after.
+  - The patron cannot check out more tools until the situation is resolved.
+  - Fees begin after a grace period (through closing on the next open day): $1 per day for standard tools, $3 per day for high-demand or large tools. The fee per loan never exceeds the lower of the tool's replacement value or $20.
+- **Postcondition:** None.
+### E8 Process / Record Fee Payments
+ 
+- **Actor:** Employee
+- **Precondition:** The patron is present and owes a balance.
+- **Main flow:**
+  1. Employee opens the patron's account and reviews the balance.
+  2. Employee processes or records the payment.
+  3. System updates the balance and saves the transaction in the payment history.
+- **Postcondition:** The patron sees the updated balance on their dashboard.
+### E9 Generate Reports
+ 
+- **Actor:** Employee
+- **Main flow:**
+  1. Employee opens the reporting section of the administrative dashboard.
+  2. Employee selects a report.
+  3. System generates it.
+| Report | Contents |
+|---|---|
+| Currently checked out | All active loans |
+| Overdue | All unreturned loans |
+| In repair | All Out of Service tools, with notes |
+| Most borrowed | Tool types ranked by number of loans |
+ 
+### E10 Flag Tool Out of Service
+ 
+- **Actor:** Employee
+- **Extends:** E3 (during a return) and E5 (while managing inventory)
+- **Precondition:** The tool is not checked out. During a return, the return completes first.
+- **Main flow:**
+  1. Employee selects the tool.
+  2. Employee describes what needs to be done (for example broken, damaged, or missing parts).
+  3. Employee marks the tool Out of Service.
+  4. System saves the note and removes the tool from lending.
+- **Alternate flows:**
+  - Return to service: after staff finish the work, the employee marks the tool in service and it becomes Available.
+  - Tool has waitlisted patrons: the waitlist is unchanged. Holds start only when a tool is in service and available.
+- **Postcondition:** The tool appears in the In repair report until it is marked in service.
