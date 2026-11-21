@@ -432,3 +432,28 @@ flowchart TD
     classDef page fill:#101820,stroke:#ffffff,color:#ffffff
     class AdminLogin,AdminHome,CheckoutLookup,Eligibility,CheckoutScan,CheckoutDone,ReturnScan,Inspection,ReturnDone,FlagTool,RenewalList,RenewalDetail,Inventory,AddTool,EditTool,Reservations,Unreturned,PatronAccount,RecordPayment,Reports,ReportView page
 ```
+
+## User Screens
+### Patron Dashboard
+<img src="./Images/Dashboard.png" width="450" height="300">
+
+### Patron Browse Tools
+<img src="./Images/Browse.png" width="450" height="300">
+
+### Patron Fees
+<img src="./Images/Fees.png" width="450" height="300">
+
+### Tool Description
+<img src="./Images/Tool.png" width="450" height="300">
+
+### Staff Patron Check
+<img src="./Images/Staffcheck.png" width="450" height="300">
+
+### Staff Tool Inspection
+<img src="./Images/Inspection.png" width="450" height="300">
+
+### Staff Inventory
+<img src="./Images/Inventory.png" width="450" height="300">
+
+### Staff Reports
+<img src="./Images/Reports.png" width="450" height="300">
