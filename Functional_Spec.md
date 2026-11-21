@@ -285,3 +285,150 @@ flowchart LR
   - Return to service: after staff finish the work, the employee marks the tool in service and it becomes Available.
   - Tool has waitlisted patrons: the waitlist is unchanged. Holds start only when a tool is in service and available.
 - **Postcondition:** The tool appears in the In repair report until it is marked in service.
+
+## UX Flows
+### Patreon Site
+```mermaid
+flowchart TD
+    Landing[Landing page]
+    Login[Login page]
+    Register[Registration page]
+    Waiver[Liability waiver page]
+    Dashboard[Patron dashboard]
+    Search[Tool search results page]
+    Detail[Tool detail page]
+    ResConfirm[Reservation confirmation page]
+    WaitConfirm[Waitlist confirmation page]
+    Reservations[My reservations page]
+    Loans[My borrowed items page]
+    Renewal[Renewal request page]
+    Fees[Fees page]
+    Pay[Online payment page]
+    Receipt[Payment confirmation page]
+
+    Landing -->|Log in| Login
+    Landing -->|Register| Register
+    Login -->|Create account| Register
+    Login -->|Log in| Dashboard
+    Register -->|Submit card number| Waiver
+    Register -->|Invalid card shows error| Register
+    Waiver -->|Sign and continue| Dashboard
+
+    Dashboard -->|Browse tools| Search
+    Search -->|Select tool| Detail
+    Detail -->|Back to results| Search
+    Detail -->|Reserve tool| ResConfirm
+    Detail -->|Join waitlist| WaitConfirm
+    ResConfirm -->|View my reservations| Reservations
+    WaitConfirm -->|View my reservations| Reservations
+    ResConfirm -->|Back to dashboard| Dashboard
+    WaitConfirm -->|Back to dashboard| Dashboard
+
+    Dashboard -->|View reservations| Reservations
+    Reservations -->|Cancel reservation| Reservations
+    Reservations -->|Leave waitlist| Reservations
+    Reservations -->|Back| Dashboard
+
+    Dashboard -->|View my loans| Loans
+    Loans -->|Request renewal| Renewal
+    Renewal -->|Submit request| Loans
+    Renewal -->|Cancel| Loans
+    Loans -->|Back| Dashboard
+
+    Dashboard -->|View fees| Fees
+    Fees -->|Pay online| Pay
+    Pay -->|Submit payment| Receipt
+    Pay -->|Cancel| Fees
+    Receipt -->|Back to dashboard| Dashboard
+    Fees -->|Back| Dashboard
+
+    Dashboard -->|Log out| Landing
+
+    classDef page fill:#101820,stroke:#ffffff,color:#ffffff
+    class Landing,Login,Register,Waiver,Dashboard,Search,Detail,ResConfirm,WaitConfirm,Reservations,Loans,Renewal,Fees,Pay,Receipt page
+```
+### Employee Site
+```mermaid
+flowchart TD
+    AdminLogin[Employee login page]
+    AdminHome[Admin dashboard]
+
+    CheckoutLookup[Checkout patron lookup page]
+    Eligibility[Eligibility check page]
+    CheckoutScan[Checkout scan tool page]
+    CheckoutDone[Checkout confirmation page]
+
+    ReturnScan[Return scan tool page]
+    Inspection[Return inspection page]
+    ReturnDone[Return confirmation page]
+    FlagTool[Flag out of service page]
+
+    RenewalList[Renewal requests page]
+    RenewalDetail[Renewal request detail page]
+
+    Inventory[Inventory page]
+    AddTool[Add tool page]
+    EditTool[Edit tool page]
+
+    Reservations[Reservations and waitlists page]
+
+    Unreturned[Unreturned tools page]
+    PatronAccount[Patron account page]
+    RecordPayment[Record payment page]
+
+    Reports[Reports page]
+    ReportView[Report results page]
+
+    AdminLogin -->|Log in| AdminHome
+    AdminHome -->|Log out| AdminLogin
+
+    AdminHome -->|Process checkout| CheckoutLookup
+    CheckoutLookup -->|Find patron| Eligibility
+    Eligibility -->|Eligible, continue| CheckoutScan
+    Eligibility -->|Refuse checkout| AdminHome
+    CheckoutScan -->|Confirm checkout| CheckoutDone
+    CheckoutDone -->|Done| AdminHome
+
+    AdminHome -->|Process return| ReturnScan
+    ReturnScan -->|Scan barcode| Inspection
+    Inspection -->|Complete return| ReturnDone
+    ReturnDone -->|Flag tool out of service| FlagTool
+    ReturnDone -->|Done| AdminHome
+
+    AdminHome -->|Review renewals| RenewalList
+    RenewalList -->|Open request| RenewalDetail
+    RenewalDetail -->|Approve| RenewalList
+    RenewalDetail -->|Deny with reason| RenewalList
+    RenewalList -->|Back| AdminHome
+
+    AdminHome -->|Manage inventory| Inventory
+    Inventory -->|Add tool| AddTool
+    AddTool -->|Save| Inventory
+    Inventory -->|Edit tool| EditTool
+    EditTool -->|Save| Inventory
+    EditTool -->|Retire tool| Inventory
+    Inventory -->|Flag out of service| FlagTool
+    FlagTool -->|Save note| Inventory
+    FlagTool -->|Mark back in service| Inventory
+    Inventory -->|Back| AdminHome
+
+    AdminHome -->|Manage reservations| Reservations
+    Reservations -->|Create or cancel reservation| Reservations
+    Reservations -->|Back| AdminHome
+
+    AdminHome -->|View unreturned tools| Unreturned
+    AdminHome -->|Search patron accounts| PatronAccount
+    Unreturned -->|Open patron account| PatronAccount
+    PatronAccount -->|Record payment| RecordPayment
+    RecordPayment -->|Save payment| PatronAccount
+    PatronAccount -->|Back| AdminHome
+    Unreturned -->|Back| AdminHome
+
+    AdminHome -->|View reports| Reports
+    Reports -->|Select report| ReportView
+    ReportView -->|Back| Reports
+    Reports -->|Back| AdminHome
+
+    classDef page fill:#101820,stroke:#ffffff,color:#ffffff
+    class AdminLogin,AdminHome,CheckoutLookup,Eligibility,CheckoutScan,CheckoutDone,ReturnScan,Inspection,ReturnDone,FlagTool,RenewalList,RenewalDetail,Inventory,AddTool,EditTool,Reservations,Unreturned,PatronAccount,RecordPayment,Reports,ReportView page
+```
