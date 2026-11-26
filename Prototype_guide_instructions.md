@@ -10,10 +10,9 @@
 
 ## Prototype URLs
 
-
-* **Main Landing Page (Patron & Staff Entry):** `https://web.engr.oregonstate.edu/~rentzd/tool_lending_library_prototype.html#/`
-* **Patron Login Direct Link:** `https://web.engr.oregonstate.edu/~rentzd/tool_lending_library_prototype.html#/login`
-* **Staff / Admin Portal Direct Link:** `https://web.engr.oregonstate.edu/~rentzd/tool_lending_library_prototype.html#/staff/login`
+* **[Main Landing Page (Patron & Staff Entry)](https://web.engr.oregonstate.edu/~rentzd/tool_lending_library_prototype.html#/)**
+* **[Patron Login Direct Link](https://web.engr.oregonstate.edu/~rentzd/tool_lending_library_prototype.html#/login)**
+* **[Staff / Admin Portal Direct Link](https://web.engr.oregonstate.edu/~rentzd/tool_lending_library_prototype.html#/staff/login)**
 
 ---
 

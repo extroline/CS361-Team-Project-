@@ -1,0 +1,3286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tool Lending Library</title>
+  <style>
+    :root {
+      --nav-bg: #141d22;
+      --nav-text: #f3f4f6;
+      --bg: #f7f6f2;
+      --surface: #ffffff;
+      --surface-muted: #f3f1eb;
+      --border: #e1ded6;
+      --border-strong: #c7c3b9;
+      --text: #182026;
+      --text-muted: #5b6369;
+      --accent: #b34700;
+      --accent-hover: #933a00;
+      --accent-soft: #fdf4ec;
+      --link: #1d4ed8;
+
+      --green-bg: #daf0e2;
+      --green-text: #176636;
+      --amber-bg: #faecc8;
+      --amber-text: #7c4f06;
+      --blue-bg: #dce8fc;
+      --blue-text: #1e4e94;
+      --red-bg: #f9dcd8;
+      --red-text: #9b261e;
+      --gray-bg: #eae8e2;
+      --gray-text: #54595e;
+
+      --radius: 10px;
+      --radius-sm: 7px;
+      --shadow: 0 1px 2px rgba(20, 29, 34, 0.04);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navigation Bar */
+    .topbar {
+      background: var(--nav-bg);
+      color: var(--nav-text);
+      padding: 0 28px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+      color: #fff;
+      text-decoration: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      background: transparent;
+      border: none;
+      color: #d6dde2;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 7px 11px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .nav-link.active {
+      background: rgba(255, 255, 255, 0.16);
+      color: #ffffff;
+    }
+
+    .nav-badge {
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 999px;
+      line-height: 1.4;
+    }
+
+    /* Layout */
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+      flex: 1;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .page-title {
+      font-size: 1.85rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0;
+    }
+
+    .breadcrumb {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .muted { color: var(--text-muted); }
+    .small { font-size: 0.86rem; }
+
+    /* Cards & Grids */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 1.12rem;
+      font-weight: 700;
+      margin: 0 0 14px 0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .split-browse {
+      display: grid;
+      grid-template-columns: 230px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .split-inventory {
+      display: grid;
+      grid-template-columns: minmax(0, 1.85fr) minmax(300px, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    /* Stat Cards */
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-label {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    /* Alert Banner */
+    .alert {
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      font-size: 0.94rem;
+      border: 1px solid transparent;
+    }
+
+    .alert-danger {
+      background: #fdf2f0;
+      border-color: #c77c74;
+      color: #3a1410;
+    }
+
+    .alert-success {
+      background: #eef8f2;
+      border-color: #82c49c;
+      color: #134a28;
+    }
+
+    .alert-info {
+      background: #f1f5fd;
+      border-color: #9cb9ea;
+      color: #163669;
+    }
+
+    .alert-warn {
+      background: #fef8e7;
+      border-color: #d9b458;
+      color: #5c3b04;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 9px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+      text-decoration: none;
+    }
+
+    .btn:disabled {
+      opacity: 0.48;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--surface-muted);
+      border-color: #9e9a90;
+    }
+
+    .btn-danger-outline {
+      background: var(--surface);
+      color: var(--red-text);
+      border-color: #dfb4af;
+    }
+    .btn-danger-outline:hover:not(:disabled) { background: #fdf2f0; }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.84rem;
+      font-weight: 500;
+    }
+
+    .btn-block { width: 100%; }
+
+    .link-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--link);
+      text-decoration: underline;
+      font: inherit;
+      cursor: pointer;
+    }
+    .link-btn:hover { color: #1e3a8a; }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-green { background: var(--green-bg); color: var(--green-text); }
+    .badge-amber { background: var(--amber-bg); color: var(--amber-text); }
+    .badge-blue { background: var(--blue-bg); color: var(--blue-text); }
+    .badge-red { background: var(--red-bg); color: var(--red-text); }
+    .badge-gray { background: var(--gray-bg); color: var(--gray-text); }
+
+    /* Tables */
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    th {
+      text-align: left;
+      font-weight: 700;
+      font-size: 0.84rem;
+      color: var(--text);
+      padding: 10px 10px 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 13px 10px 13px 0;
+      border-bottom: 1px solid #efede7;
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Forms */
+    .form-group { margin-bottom: 14px; }
+
+    label.field-label {
+      display: block;
+      font-size: 0.86rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="number"],
+    input[type="email"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 0.93rem;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: #fff;
+      color: var(--text);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid rgba(179, 71, 0, 0.25);
+      border-color: var(--accent);
+    }
+
+    textarea { min-height: 86px; resize: vertical; }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 0.92rem;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+
+    .checkbox-row input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+    }
+
+    /* Tool Cards */
+    .tool-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .tool-photo {
+      background: #e8e6de;
+      border-radius: 7px;
+      height: 138px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #5b6369;
+      font-size: 0.82rem;
+      gap: 6px;
+    }
+
+    .tool-photo-lg {
+      height: 360px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .tool-name {
+      font-weight: 700;
+      font-size: 1.02rem;
+      margin: 0;
+    }
+
+    /* Report Selector Cards */
+    .report-tab {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .report-tab:hover { border-color: var(--border-strong); }
+
+    .report-tab.active {
+      background: var(--accent-soft);
+      border: 2px solid var(--accent);
+    }
+
+    .report-tab-title {
+      font-weight: 700;
+      font-size: 0.98rem;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+
+    /* Inventory accordion card */
+    .inv-group {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      background: #fff;
+    }
+
+    .inv-group-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      gap: 12px;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 29, 34, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 520px;
+      padding: 24px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.22);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--nav-bg);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 500;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      z-index: 120;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Footer */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 16px 28px;
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: #f2f0ea;
+    }
+
+    /* Hero / Auth */
+    .auth-shell {
+      max-width: 460px;
+      margin: 28px auto;
+    }
+
+    .hero-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 40px 36px;
+      margin-bottom: 24px;
+    }
+
+    .demo-pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .kv-table td { padding: 9px 10px 9px 0; }
+    .kv-label { font-weight: 600; width: 42%; color: var(--text); }
+
+    @media (max-width: 900px) {
+      .grid-3, .grid-4, .split-browse, .split-inventory, .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .topbar {
+        height: auto;
+        padding: 12px 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .container { padding: 20px 16px 48px; }
+    }
+  </style>
+</head>
+<body>
+  <header id="topbar" class="topbar"></header>
+  <main id="app" class="container"></main>
+  <footer class="footer">
+    <div>
+      <strong>County Tool Lending Library</strong> · Prototype by Dakota Rentz, Brendan Bessman, Zach Yarvis &amp; Benny Garcia · Simulated Date: <strong>Nov 21, 2026</strong>
+    </div>
+    <div style="display:flex; gap:14px; align-items:center;">
+      <button class="link-btn" onclick="openQuickHelp()">Demo Credentials</button>
+      <button class="link-btn" onclick="resetDemoData()">Reset Demo Data</button>
+    </div>
+  </footer>
+  <div id="modal-root"></div>
+  <div id="toast-root"></div>
+
+  <script>
+    /*************************************************************************
+     * SIMULATED DATE & INITIAL SEED DATA
+     *************************************************************************/
+    const STORAGE_KEY = "tll_prototype_state_v1";
+    const TODAY = "2026-11-21"; // Matches screenshots ("Generated Nov 21", "Due Nov 24 -> 3 days", "Due Nov 18 -> 3 days overdue")
+
+    function buildSeedData() {
+      return {
+        session: { role: null, patronId: null, staffName: null },
+
+        // Simulated County Library Card Validation API directory
+        countyApiCards: {
+          "LIB-1042-4810": { name: "Sarah Jenkins", email: "sarah.j@example.com", valid: true, dob: "1992-04-12" },
+          "LIB-1088-4821": { name: "David Chen", email: "david.c@example.com", valid: true, dob: "1988-09-03" },
+          "LIB-1055-3302": { name: "James Miller", email: "james.m@example.com", valid: true, dob: "1984-11-29" },
+          "LIB-1091-7740": { name: "Alex Rivera", email: "alex.r@example.com", valid: true, dob: "1996-02-17" },
+          "LIB-1077-5190": { name: "Robert Hayes", email: "robert.h@example.com", valid: true, dob: "1979-06-21" },
+          "LIB-2026-9901": { name: "Maya Patel", email: "maya.p@example.com", valid: true, dob: "1999-08-14" },
+          "LIB-2026-9902": { name: "Jordan Kim", email: "jordan.k@example.com", valid: true, dob: "1995-01-30" },
+          "LIB-0000-0000": { name: "Expired Card Holder", email: "expired@example.com", valid: false, dob: "1990-01-01" }
+        },
+
+        patrons: [
+          {
+            id: "P1",
+            name: "Sarah Jenkins",
+            firstName: "Sarah",
+            cardNumber: "LIB-1042-4810",
+            email: "sarah.j@example.com",
+            password: "patron123",
+            waiverSigned: true,
+            waiverDate: "2026-09-01",
+            createdAt: "2026-09-01",
+            payments: [
+              { id: "PAY-101", date: "2026-09-14", method: "Online", amount: 2.00, note: "Late fee for Orbital sander" }
+            ]
+          },
+          {
+            id: "P2",
+            name: "David Chen",
+            firstName: "David",
+            cardNumber: "LIB-1088-4821",
+            email: "david.c@example.com",
+            password: "patron123",
+            waiverSigned: true,
+            waiverDate: "2026-10-02",
+            createdAt: "2026-10-02",
+            payments: []
+          },
+          {
+            id: "P3",
+            name: "James Miller",
+            firstName: "James",
+            cardNumber: "LIB-1055-3302",
+            email: "james.m@example.com",
+            password: "patron123",
+            waiverSigned: true,
+            waiverDate: "2026-08-15",
+            createdAt: "2026-08-15",
+            payments: []
+          },
+          {
+            id: "P4",
+            name: "Alex Rivera",
+            firstName: "Alex",
+            cardNumber: "LIB-1091-7740",
+            email: "alex.r@example.com",
+            password: "patron123",
+            waiverSigned: true,
+            waiverDate: "2026-10-18",
+            createdAt: "2026-10-18",
+            payments: []
+          },
+          {
+            id: "P5",
+            name: "Robert Hayes",
+            firstName: "Robert",
+            cardNumber: "LIB-1077-5190",
+            email: "robert.h@example.com",
+            password: "patron123",
+            waiverSigned: true,
+            waiverDate: "2026-07-10",
+            createdAt: "2026-07-10",
+            payments: [
+              { id: "PAY-102", date: "2026-10-05", method: "In person (Cash)", amount: 3.00, note: "Late fee payment" }
+            ]
+          }
+        ],
+
+        toolTypes: [
+          {
+            id: "T1",
+            name: "Cordless drill",
+            category: "Power tools",
+            feeClass: "standard",
+            replacementValue: 120,
+            isKit: true,
+            kitContents: "20V cordless drill, 2 batteries, charger, 12-piece bit set, carrying case",
+            description: "Compact 20V brushless cordless drill/driver suitable for wood, drywall, and light metalwork.",
+            icon: "drill",
+            historicalLoans: 28
+          },
+          {
+            id: "T2",
+            name: "Circular saw",
+            category: "Power tools",
+            feeClass: "standard",
+            replacementValue: 145,
+            isKit: false,
+            kitContents: "",
+            description: "7-1/4 inch corded circular saw with laser guide and carbide framing blade.",
+            icon: "saw",
+            historicalLoans: 22
+          },
+          {
+            id: "T3",
+            name: "Table saw",
+            category: "Power tools",
+            feeClass: "high",
+            replacementValue: 350,
+            isKit: false,
+            kitContents: "",
+            description: "Portable 10-inch jobsite table saw with folding stand, rip fence, and push stick.",
+            icon: "tablesaw",
+            historicalLoans: 19
+          },
+          {
+            id: "T4",
+            name: "Pressure washer",
+            category: "Yard and garden",
+            feeClass: "high",
+            replacementValue: 260,
+            isKit: true,
+            kitContents: "2300 PSI electric pressure washer, spray wand, 25ft hose, 4 quick-connect nozzles",
+            description: "Electric 2300 PSI pressure washer ideal for driveways, decks, fences, and siding.",
+            icon: "washer",
+            historicalLoans: 25
+          },
+          {
+            id: "T5",
+            name: "Electric sander",
+            category: "Power tools",
+            feeClass: "standard",
+            replacementValue: 75,
+            isKit: false,
+            kitContents: "",
+            description: "5-inch random orbital electric sander with dust collection canister.",
+            icon: "sander",
+            historicalLoans: 17
+          },
+          {
+            id: "T6",
+            name: "Extension ladder",
+            category: "Hand tools",
+            feeClass: "high",
+            replacementValue: 210,
+            isKit: false,
+            kitContents: "",
+            description: "20-foot lightweight fiberglass extension ladder rated for 300 lbs.",
+            icon: "ladder",
+            historicalLoans: 14
+          },
+          {
+            id: "T7",
+            name: "Old hand planer",
+            category: "Hand tools",
+            feeClass: "standard",
+            replacementValue: 45,
+            isKit: false,
+            kitContents: "",
+            description: "Classic #4 smoothing bench hand plane for woodworking.",
+            icon: "planer",
+            historicalLoans: 6
+          }
+        ],
+
+        units: [
+          // Cordless drill (3 units: 2 available, 1 checked out)
+          { id: "CD-01", toolTypeId: "T1", barcode: "BC-CD-001", status: "Available", note: "" },
+          { id: "CD-02", toolTypeId: "T1", barcode: "BC-CD-002", status: "Checked out", note: "" },
+          { id: "CD-03", toolTypeId: "T1", barcode: "BC-CD-003", status: "Available", note: "" },
+
+          // Circular saw (2 units: 1 available, 1 checked out)
+          { id: "CS-01", toolTypeId: "T2", barcode: "BC-CS-001", status: "Available", note: "" },
+          { id: "CS-02", toolTypeId: "T2", barcode: "BC-CS-002", status: "Checked out", note: "" },
+
+          // Table saw (1 unit: checked out -> 0 available)
+          { id: "TS-01", toolTypeId: "T3", barcode: "BC-TS-001", status: "Checked out", note: "" },
+
+          // Pressure washer (2 units: 1 available, 1 checked out)
+          { id: "PW-01", toolTypeId: "T4", barcode: "BC-PW-001", status: "Checked out", note: "" },
+          { id: "PW-02", toolTypeId: "T4", barcode: "BC-PW-002", status: "Available", note: "" },
+
+          // Electric sander (2 units: 1 checked out, 1 out of service -> 0 available)
+          { id: "ES-01", toolTypeId: "T5", barcode: "BC-ES-001", status: "Checked out", note: "" },
+          { id: "ES-02", toolTypeId: "T5", barcode: "BC-ES-002", status: "Out of service", note: "Power cord insulation frayed near handle; sent to tech staff for replacement." },
+
+          // Extension ladder (2 units: 1 available, 1 checked out)
+          { id: "EL-01", toolTypeId: "T6", barcode: "BC-EL-001", status: "Checked out", note: "" },
+          { id: "EL-02", toolTypeId: "T6", barcode: "BC-EL-002", status: "Available", note: "" },
+
+          // Old hand planer (1 unit: retired)
+          { id: "HP-01", toolTypeId: "T7", barcode: "BC-HP-001", status: "Retired", note: "Sole cracked beyond repair." }
+        ],
+
+        loans: [
+          // Sarah: Pressure washer (On loan, due Nov 24 -> 3 days left)
+          {
+            id: "L1", patronId: "P1", toolTypeId: "T4", unitId: "PW-01",
+            checkoutDate: "2026-11-10", dueDate: "2026-11-24", originalDays: 14,
+            returnedDate: null, renewed: false, renewalStatus: null, renewalReason: "",
+            feePaid: 0
+          },
+          // Sarah: Extension ladder (Unreturned, due Nov 18 -> 3 days overdue, 2 charged days @ $3/day = $6.00)
+          {
+            id: "L2", patronId: "P1", toolTypeId: "T6", unitId: "EL-01",
+            checkoutDate: "2026-11-04", dueDate: "2026-11-18", originalDays: 14,
+            returnedDate: null, renewed: false, renewalStatus: null, renewalReason: "",
+            feePaid: 0
+          },
+          // David: Cordless drill (On loan)
+          {
+            id: "L3", patronId: "P2", toolTypeId: "T1", unitId: "CD-02",
+            checkoutDate: "2026-11-14", dueDate: "2026-11-28", originalDays: 14,
+            returnedDate: null, renewed: false, renewalStatus: "pending", renewalReason: "",
+            feePaid: 0
+          },
+          // David: Table saw (On loan)
+          {
+            id: "L4", patronId: "P2", toolTypeId: "T3", unitId: "TS-01",
+            checkoutDate: "2026-11-12", dueDate: "2026-11-26", originalDays: 14,
+            returnedDate: null, renewed: false, renewalStatus: null, renewalReason: "",
+            feePaid: 0
+          },
+          // James: Electric sander (Due Nov 21 -> returned on time in Inspection demo!)
+          {
+            id: "L5", patronId: "P3", toolTypeId: "T5", unitId: "ES-01",
+            checkoutDate: "2026-11-07", dueDate: "2026-11-21", originalDays: 14,
+            returnedDate: null, renewed: false, renewalStatus: null, renewalReason: "",
+            feePaid: 0
+          },
+          // Robert: Circular saw (Overdue, due Nov 15 -> 6 days overdue, 5 charged days @ $1/day = $5.00)
+          {
+            id: "L6", patronId: "P5", toolTypeId: "T2", unitId: "CS-02",
+            checkoutDate: "2026-11-01", dueDate: "2026-11-15", originalDays: 14,
+            returnedDate: null, renewed: false, renewalStatus: null, renewalReason: "",
+            feePaid: 0
+          },
+          // Historical returned loan for Sarah
+          {
+            id: "L0", patronId: "P1", toolTypeId: "T5", unitId: "ES-01",
+            checkoutDate: "2026-09-01", dueDate: "2026-09-11", originalDays: 10,
+            returnedDate: "2026-09-14", renewed: false, renewalStatus: null, renewalReason: "",
+            feePaid: 2.00
+          }
+        ],
+
+        reservations: [
+          // Sarah: Ready for pickup Cordless drill by Nov 24
+          { id: "R1", patronId: "P1", toolTypeId: "T1", status: "Ready for pickup", createdAt: "2026-11-21", pickupBy: "2026-11-24" },
+          // David: Ready for pickup Circular saw by Nov 23 (matches Staffcheck.png!)
+          { id: "R2", patronId: "P2", toolTypeId: "T2", status: "Ready for pickup", createdAt: "2026-11-20", pickupBy: "2026-11-23" },
+          // Waitlist for Table saw: Alex #1, Sarah #2, James #3
+          { id: "R3", patronId: "P4", toolTypeId: "T3", status: "Waitlist", createdAt: "2026-11-17", pickupBy: null },
+          { id: "R4", patronId: "P1", toolTypeId: "T3", status: "Waitlist", createdAt: "2026-11-18", pickupBy: null },
+          { id: "R5", patronId: "P3", toolTypeId: "T3", status: "Waitlist", createdAt: "2026-11-19", pickupBy: null },
+          // Waitlist for Electric sander: Alex #1
+          { id: "R6", patronId: "P4", toolTypeId: "T5", status: "Waitlist", createdAt: "2026-11-20", pickupBy: null }
+        ]
+      };
+    }
+
+    let state = loadState();
+    let route = { page: "landing", params: {} };
+    let ui = {
+      browseSearch: "",
+      browseCategory: "all",
+      browseAvailableOnly: false,
+      browseKitsOnly: false,
+      browseSort: "name",
+      staffReportTab: "overdue",
+      checkoutPatronId: null,
+      checkoutAgeVerified: false,
+      checkoutLastLoanId: null,
+      returnUnitId: null,
+      returnLastInfo: null,
+      expandedInvGroups: { T1: true },
+      regCardData: null,
+      regCardNumber: ""
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return buildSeedData();
+    }
+
+    function saveState() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+    }
+
+    function resetDemoData() {
+      state = buildSeedData();
+      saveState();
+      ui.checkoutPatronId = null;
+      ui.returnUnitId = null;
+      navigate("landing");
+      showToast("Demo data restored to initial state.");
+    }
+
+    /*************************************************************************
+     * DATE, FEE & DOMAIN HELPERS
+     *************************************************************************/
+    function parseDate(str) {
+      const [y, m, d] = str.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    function formatDateShort(str) {
+      if (!str) return "—";
+      const d = parseDate(str);
+      return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    }
+
+    function addDays(str, days) {
+      const d = parseDate(str);
+      d.setDate(d.getDate() + days);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function diffDays(fromStr, toStr) {
+      const a = parseDate(fromStr);
+      const b = parseDate(toStr);
+      return Math.round((b - a) / (1000 * 60 * 60 * 24));
+    }
+
+    function formatMoney(n) {
+      return "$" + Number(n || 0).toFixed(2);
+    }
+
+    function getToolType(id) {
+      return state.toolTypes.find(t => t.id === id);
+    }
+
+    function getUnit(id) {
+      return state.units.find(u => u.id === id);
+    }
+
+    function getPatron(id) {
+      return state.patrons.find(p => p.id === id);
+    }
+
+    function getCurrentPatron() {
+      return state.session.role === "patron" ? getPatron(state.session.patronId) : null;
+    }
+
+    function getUnitsForType(toolTypeId) {
+      return state.units.filter(u => u.toolTypeId === toolTypeId && u.status !== "Retired");
+    }
+
+    function getAvailableUnitsForType(toolTypeId) {
+      return state.units.filter(u => u.toolTypeId === toolTypeId && u.status === "Available");
+    }
+
+    function getWaitlistForType(toolTypeId) {
+      return state.reservations.filter(r => r.toolTypeId === toolTypeId && r.status === "Waitlist");
+    }
+
+    function getActiveLoansForPatron(patronId) {
+      return state.loans.filter(l => l.patronId === patronId && !l.returnedDate);
+    }
+
+    function isLoanOverdue(loan) {
+      if (loan.returnedDate) return false;
+      return diffDays(loan.dueDate, TODAY) > 0;
+    }
+
+    // Fee rules from spec:
+    // 1-day grace period, then $1/day (standard) or $3/day (high-demand), capped at min(replacementValue, $20)
+    function computeLoanFeeDetails(loan) {
+      const tool = getToolType(loan.toolTypeId);
+      const endDate = loan.returnedDate || TODAY;
+      const daysLate = Math.max(0, diffDays(loan.dueDate, endDate));
+      const chargedDays = Math.max(0, daysLate - 1); // 1 day grace period
+      const dailyRate = tool && tool.feeClass === "high" ? 3 : 1;
+      const cap = Math.min(tool ? tool.replacementValue : 20, 20);
+      const totalAccrued = Math.min(chargedDays * dailyRate, cap);
+      const unpaid = Math.max(0, totalAccrued - (loan.feePaid || 0));
+      return { daysLate, chargedDays, dailyRate, cap, totalAccrued, unpaid };
+    }
+
+    function getPatronOutstandingFees(patronId) {
+      return state.loans
+        .filter(l => l.patronId === patronId)
+        .reduce((sum, l) => sum + computeLoanFeeDetails(l).unpaid, 0);
+    }
+
+    function patronHasOverdue(patronId) {
+      return getActiveLoansForPatron(patronId).some(isLoanOverdue);
+    }
+
+    function cardEnding(cardNumber) {
+      return cardNumber ? cardNumber.slice(-4) : "0000";
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    /*************************************************************************
+     * SVG TOOL ILLUSTRATIONS (ZERO EXTERNAL IMAGES)
+     *************************************************************************/
+    function renderToolSvg(icon, size = 56) {
+      const stroke = "#545d63";
+      const accent = "#b34700";
+      const svgs = {
+        drill: `<svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" stroke="${stroke}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22h28l6 4v8l-6 4H18l-6-4V22z" fill="#fff"/><path d="M46 27h10v6H46" fill="#d9d6cc"/><path d="M56 30h5"/><path d="M22 38l-3 16h10l3-16" fill="${accent}" stroke="${accent}"/><circle cx="24" cy="30" r="3"/></svg>`,
+        saw: `<svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" stroke="${stroke}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="36" r="16" fill="#fff"/><circle cx="32" cy="36" r="5" fill="${accent}" stroke="${accent}"/><path d="M14 36a18 18 0 0 1 36 0" fill="#d9d6cc"/><path d="M24 18h16l4 6H20l4-6z" fill="${accent}" stroke="${accent}"/><line x1="10" y1="42" x2="54" y2="42"/></svg>`,
+        tablesaw: `<svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" stroke="${stroke}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="26" width="44" height="10" rx="2" fill="#fff"/><path d="M24 26a8 8 0 0 1 16 0" fill="${accent}" stroke="${accent}"/><line x1="16" y1="36" x2="12" y2="54"/><line x1="48" y1="36" x2="52" y2="54"/><line x1="14" y1="46" x2="50" y2="46"/></svg>`,
+        washer: `<svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" stroke="${stroke}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="20" width="22" height="26" rx="3" fill="${accent}" stroke="${accent}"/><circle cx="19" cy="49" r="5" fill="#fff"/><circle cx="32" cy="49" r="5" fill="#fff"/><path d="M20 20v-8h10v8"/><path d="M36 34h8l8-14"/><path d="M52 20l4-4"/></svg>`,
+        sander: `<svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" stroke="${stroke}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="38" width="36" height="8" rx="2" fill="#fff"/><path d="M18 38c0-10 6-16 14-16s14 6 14 16" fill="${accent}" stroke="${accent}"/><path d="M24 22h16v-5H24z" fill="#fff"/><path d="M14 30H8"/></svg>`,
+        ladder: `<svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" stroke="${stroke}" stroke-width="2.8" stroke-linecap="round"><line x1="22" y1="10" x2="22" y2="54" stroke="${accent}"/><line x1="42" y1="10" x2="42" y2="54" stroke="${accent}"/><line x1="22" y1="18" x2="42" y2="18"/><line x1="22" y1="27" x2="42" y2="27"/><line x1="22" y1="36" x2="42" y2="36"/><line x1="22" y1="45" x2="42" y2="45"/></svg>`,
+        planer: `<svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" stroke="${stroke}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="36" width="44" height="10" rx="2" fill="#fff"/><path d="M32 36l8-16h6l-8 16" fill="#d9d6cc"/><circle cx="20" cy="30" r="4" fill="${accent}" stroke="${accent}"/><path d="M46 36c3-6 6-8 6-14"/></svg>`
+      };
+      return svgs[icon] || svgs.drill;
+    }
+
+    /*************************************************************************
+     * NAVIGATION & HASH ROUTING
+     *************************************************************************/
+    function navigate(page, params = {}) {
+      route = { page, params };
+      const hashMap = {
+        landing: "#/",
+        login: "#/login",
+        register: "#/register",
+        waiver: "#/waiver",
+        patron_dashboard: "#/patron/dashboard",
+        patron_browse: "#/patron/browse",
+        patron_tool: `#/patron/tool/${params.toolTypeId || ""}`,
+        patron_loans: "#/patron/loans",
+        patron_reservations: "#/patron/reservations",
+        patron_fees: "#/patron/fees",
+        staff_login: "#/staff/login",
+        staff_home: "#/staff/dashboard",
+        staff_checkout: "#/staff/checkout",
+        staff_return: "#/staff/return",
+        staff_renewals: "#/staff/renewals",
+        staff_inventory: "#/staff/inventory",
+        staff_reservations: "#/staff/reservations",
+        staff_unreturned: "#/staff/unreturned",
+        staff_patron: `#/staff/patron/${params.patronId || ""}`,
+        staff_reports: "#/staff/reports"
+      };
+      if (hashMap[page]) {
+        history.replaceState(null, "", hashMap[page]);
+      }
+      render();
+      window.scrollTo(0, 0);
+    }
+
+    function initFromHash() {
+      const h = (location.hash || "").replace(/^#\/?/, "");
+      if (h === "staff" || h === "staff/login") {
+        route = { page: state.session.role === "staff" ? "staff_home" : "staff_login", params: {} };
+      } else if (h.startsWith("staff/") && state.session.role === "staff") {
+        const sub = h.split("/")[1];
+        const map = {
+          dashboard: "staff_home", checkout: "staff_checkout", return: "staff_return",
+          renewals: "staff_renewals", inventory: "staff_inventory",
+          reservations: "staff_reservations", unreturned: "staff_unreturned", reports: "staff_reports"
+        };
+        route = { page: map[sub] || "staff_home", params: {} };
+      } else if (h.startsWith("patron/") && state.session.role === "patron") {
+        const sub = h.split("/")[1];
+        const map = {
+          dashboard: "patron_dashboard", browse: "patron_browse",
+          loans: "patron_loans", reservations: "patron_reservations", fees: "patron_fees"
+        };
+        route = { page: map[sub] || "patron_dashboard", params: {} };
+      } else if (state.session.role === "patron") {
+        route = { page: "patron_dashboard", params: {} };
+      } else if (state.session.role === "staff") {
+        route = { page: "staff_home", params: {} };
+      } else {
+        route = { page: "landing", params: {} };
+      }
+    }
+
+    function logout() {
+      state.session = { role: null, patronId: null, staffName: null };
+      saveState();
+      navigate("landing");
+      showToast("You have been logged out.");
+    }
+
+    /*************************************************************************
+     * TOAST & MODAL UTILITIES
+     *************************************************************************/
+    let toastTimer = null;
+    function showToast(msg) {
+      const root = document.getElementById("toast-root");
+      root.innerHTML = `<div class="toast">${escapeHtml(msg)}</div>`;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { root.innerHTML = ""; }, 3200);
+    }
+
+    function openModal(html) {
+      document.getElementById("modal-root").innerHTML = `
+        <div class="modal-backdrop" onclick="if(event.target===this) closeModal()">
+          <div class="modal">${html}</div>
+        </div>
+      `;
+    }
+
+    function closeModal() {
+      document.getElementById("modal-root").innerHTML = "";
+    }
+
+    function openQuickHelp() {
+      openModal(`
+        <h2 class="card-title" style="margin-bottom:8px;">Prototype Demo Credentials</h2>
+        <p class="small muted" style="margin-top:0;">All changes persist in your browser's local storage so Patron and Staff views stay in sync.</p>
+        <div class="alert alert-info small" style="margin-bottom:14px;">
+          <strong>Staff Admin Portal:</strong> Password <code>admin123</code> (URL hash: <code>#/staff</code>)
+        </div>
+        <div class="small" style="margin-bottom:14px;">
+          <strong>Patron Accounts</strong> (Password for all: <code>patron123</code>):
+          <ul style="padding-left:18px; margin:8px 0;">
+            <li><strong>Sarah Jenkins</strong> (<code>LIB-1042-4810</code>) — 2 loans, 1 overdue ($6 fee), 1 hold, 1 waitlist</li>
+            <li><strong>David Chen</strong> (<code>LIB-1088-4821</code>) — Eligible for checkout, holds a Circular saw</li>
+            <li><strong>James Miller</strong> (<code>LIB-1055-3302</code>) — Has Electric sander checked out (great for Returns)</li>
+            <li><strong>Alex Rivera</strong> (<code>LIB-1091-7740</code>) — Clean account (0 loans, 0 fees)</li>
+          </ul>
+          <strong>New Registration Test Cards:</strong> <code>LIB-2026-9901</code> or <code>LIB-2026-9902</code> (Valid), <code>LIB-0000-0000</code> (Invalid).
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+          <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+        </div>
+      `);
+    }
+
+    /*************************************************************************
+     * TOP NAVBAR RENDERER
+     *************************************************************************/
+    function renderTopbar() {
+      const el = document.getElementById("topbar");
+      if (state.session.role === "patron") {
+        el.innerHTML = `
+          <div class="brand" onclick="navigate('patron_dashboard')">Tool Lending Library</div>
+          <nav class="nav-links">
+            <button class="nav-link ${route.page === 'patron_browse' || route.page === 'patron_tool' ? 'active' : ''}" onclick="navigate('patron_browse')">Browse tools</button>
+            <button class="nav-link ${route.page === 'patron_loans' ? 'active' : ''}" onclick="navigate('patron_loans')">My loans</button>
+            <button class="nav-link ${route.page === 'patron_reservations' ? 'active' : ''}" onclick="navigate('patron_reservations')">Reservations</button>
+            <button class="nav-link ${route.page === 'patron_fees' ? 'active' : ''}" onclick="navigate('patron_fees')">Fees</button>
+            <button class="nav-link" onclick="logout()">Log out</button>
+          </nav>
+        `;
+      } else if (state.session.role === "staff") {
+        const pendingRenewals = state.loans.filter(l => !l.returnedDate && l.renewalStatus === "pending").length;
+        const overdueCount = state.loans.filter(isLoanOverdue).length;
+        el.innerHTML = `
+          <div class="brand" onclick="navigate('staff_home')">Tool Lending Library · Staff</div>
+          <nav class="nav-links">
+            <button class="nav-link ${route.page === 'staff_checkout' ? 'active' : ''}" onclick="startCheckoutFlow()">Checkout</button>
+            <button class="nav-link ${route.page === 'staff_return' ? 'active' : ''}" onclick="startReturnFlow()">Return</button>
+            <button class="nav-link ${route.page === 'staff_renewals' ? 'active' : ''}" onclick="navigate('staff_renewals')">
+              Renewals ${pendingRenewals ? `<span class="nav-badge">${pendingRenewals}</span>` : ""}
+            </button>
+            <button class="nav-link ${route.page === 'staff_inventory' ? 'active' : ''}" onclick="navigate('staff_inventory')">Inventory</button>
+            <button class="nav-link ${route.page === 'staff_reservations' ? 'active' : ''}" onclick="navigate('staff_reservations')">Reservations</button>
+            <button class="nav-link ${route.page === 'staff_unreturned' || route.page === 'staff_patron' ? 'active' : ''}" onclick="navigate('staff_unreturned')">
+              Unreturned ${overdueCount ? `<span class="nav-badge">${overdueCount}</span>` : ""}
+            </button>
+            <button class="nav-link ${route.page === 'staff_reports' ? 'active' : ''}" onclick="navigate('staff_reports')">Reports</button>
+            <button class="nav-link" onclick="logout()">Log out</button>
+          </nav>
+        `;
+      } else {
+        el.innerHTML = `
+          <div class="brand" onclick="navigate('landing')">Tool Lending Library</div>
+          <nav class="nav-links">
+            <button class="nav-link ${route.page === 'login' ? 'active' : ''}" onclick="navigate('login')">Patron Login</button>
+            <button class="nav-link ${route.page === 'register' ? 'active' : ''}" onclick="navigate('register')">Register</button>
+            <button class="nav-link ${route.page === 'staff_login' ? 'active' : ''}" onclick="navigate('staff_login')">Staff Portal</button>
+          </nav>
+        `;
+      }
+    }
+
+    /*************************************************************************
+     * PUBLIC / AUTH PAGES (UC1 & Staff Login)
+     *************************************************************************/
+    function renderLanding() {
+      const availCount = state.units.filter(u => u.status === "Available").length;
+      const totalToolTypes = state.toolTypes.length;
+      return `
+        <div class="hero-card">
+          <div class="badge badge-amber" style="margin-bottom:12px;">County Library Extension · Separate Tool Location</div>
+          <h1 class="page-title" style="font-size:2.2rem; margin-bottom:12px;">Borrow the right tool for your next project.</h1>
+          <p class="muted" style="max-width:650px; font-size:1.02rem; margin-bottom:24px;">
+            County library cardholders 18 and older can borrow up to 5 tools at a time for up to 14 days—completely free with on-time return. Browse inventory, reserve tools online, and pick them up in person.
+          </p>
+          <div style="display:flex; flex-wrap:wrap; gap:12px;">
+            <button class="btn btn-primary" onclick="navigate('login')">Log in as Patron</button>
+            <button class="btn btn-secondary" onclick="navigate('register')">Register with Library Card</button>
+            <button class="btn btn-secondary" onclick="navigate('staff_login')">Staff / Admin Portal</button>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-title">1. Register &amp; Sign Waiver</div>
+            <p class="small muted" style="margin:0;">Validate your County Library card via our library API and sign a one-time electronic liability waiver.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">2. Browse &amp; Reserve</div>
+            <p class="small muted" style="margin:0;">Currently <strong>${availCount} units available</strong> across <strong>${totalToolTypes} tool types</strong>. Holds last 3 days; join waitlists when items are out.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">3. Pick Up in Person</div>
+            <p class="small muted" style="margin:0;">Bring your county library card and photo ID (18+). Staff scan and check out tools for up to 14 days.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderLogin() {
+      return `
+        <div class="auth-shell">
+          <div class="card">
+            <h1 class="page-title" style="font-size:1.55rem; margin-bottom:6px;">Patron Login</h1>
+            <p class="small muted" style="margin-top:0; margin-bottom:18px;">Sign in with your County Library card number and password.</p>
+            <div id="login-error"></div>
+            <form onsubmit="handlePatronLogin(event)">
+              <div class="form-group">
+                <label class="field-label">Library Card Number</label>
+                <input type="text" id="login-card" placeholder="e.g. LIB-1042-4810" required />
+              </div>
+              <div class="form-group">
+                <label class="field-label">Password</label>
+                <input type="password" id="login-pass" placeholder="patron123" required />
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Log in</button>
+            </form>
+
+            <div style="margin-top:18px; padding-top:16px; border-top:1px solid var(--border);">
+              <div class="small muted" style="margin-bottom:6px;"><strong>Quick-fill demo patron:</strong></div>
+              <div class="demo-pill-row">
+                <button class="btn btn-secondary btn-sm" onclick="quickLoginPatron('P1')">Sarah (Overdue &amp; Fees)</button>
+                <button class="btn btn-secondary btn-sm" onclick="quickLoginPatron('P2')">David (Reserved Saw)</button>
+                <button class="btn btn-secondary btn-sm" onclick="quickLoginPatron('P3')">James (Has Sander)</button>
+                <button class="btn btn-secondary btn-sm" onclick="quickLoginPatron('P4')">Alex (Clean Account)</button>
+              </div>
+            </div>
+
+            <p class="small muted" style="margin-top:18px; margin-bottom:0;">
+              New to the Tool Lending Library? <button class="link-btn" onclick="navigate('register')">Create an account</button>
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    function quickLoginPatron(patronId) {
+      state.session = { role: "patron", patronId, staffName: null };
+      saveState();
+      navigate("patron_dashboard");
+      showToast(`Signed in as ${getPatron(patronId).name}`);
+    }
+
+    function handlePatronLogin(e) {
+      e.preventDefault();
+      const card = document.getElementById("login-card").value.trim().toUpperCase();
+      const pass = document.getElementById("login-pass").value;
+      const patron = state.patrons.find(p => p.cardNumber.toUpperCase() === card && p.password === pass);
+      if (!patron) {
+        document.getElementById("login-error").innerHTML = `<div class="alert alert-danger small">Invalid library card number or password. Try <code>LIB-1042-4810</code> / <code>patron123</code>.</div>`;
+        return;
+      }
+      state.session = { role: "patron", patronId: patron.id, staffName: null };
+      saveState();
+      navigate("patron_dashboard");
+    }
+
+    function renderRegister() {
+      return `
+        <div class="auth-shell">
+          <div class="card">
+            <h1 class="page-title" style="font-size:1.55rem; margin-bottom:6px;">Register Account</h1>
+            <p class="small muted" style="margin-top:0; margin-bottom:18px;">
+              Enter your County Library card number. We will verify it using the County Library API.
+            </p>
+            <div id="reg-error"></div>
+            <form onsubmit="handleRegisterCard(event)">
+              <div class="form-group">
+                <label class="field-label">County Library Card Number</label>
+                <input type="text" id="reg-card" placeholder="e.g. LIB-2026-9901" value="${escapeHtml(ui.regCardNumber)}" required />
+              </div>
+              <div class="form-group">
+                <label class="field-label">Create Password</label>
+                <input type="password" id="reg-pass" placeholder="At least 6 characters" value="patron123" required />
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Verify Library Card</button>
+            </form>
+
+            <div class="alert alert-info small" style="margin-top:16px; margin-bottom:0;">
+              <strong>Test API Cards:</strong><br/>
+              Valid new cards: <code>LIB-2026-9901</code>, <code>LIB-2026-9902</code><br/>
+              Invalid card test: <code>LIB-0000-0000</code>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleRegisterCard(e) {
+      e.preventDefault();
+      const card = document.getElementById("reg-card").value.trim().toUpperCase();
+      const pass = document.getElementById("reg-pass").value;
+      const errBox = document.getElementById("reg-error");
+
+      if (state.patrons.some(p => p.cardNumber.toUpperCase() === card)) {
+        errBox.innerHTML = `<div class="alert alert-danger small">An account with card <strong>${escapeHtml(card)}</strong> already exists. Please log in instead.</div>`;
+        return;
+      }
+
+      const apiRecord = state.countyApiCards[card];
+      if (!apiRecord || !apiRecord.valid) {
+        errBox.innerHTML = `<div class="alert alert-danger small"><strong>County Library API Error:</strong> Card <code>${escapeHtml(card)}</code> could not be validated. Please check your card number or contact the main library.</div>`;
+        return;
+      }
+
+      ui.regCardNumber = card;
+      ui.regCardData = { ...apiRecord, cardNumber: card, password: pass };
+      navigate("waiver");
+    }
+
+    function renderWaiver() {
+      if (!ui.regCardData) return renderRegister();
+      const d = ui.regCardData;
+      return `
+        <div class="auth-shell" style="max-width:600px;">
+          <div class="card">
+            <div class="badge badge-green" style="margin-bottom:10px;">County Library API: Card Validated</div>
+            <h1 class="page-title" style="font-size:1.55rem; margin-bottom:6px;">Electronic Liability Waiver</h1>
+            <p class="small muted" style="margin-top:0;">
+              Borrower retrieved from County Library API: <strong>${escapeHtml(d.name)}</strong> (${escapeHtml(d.cardNumber)})
+            </p>
+            <div style="background:var(--surface-muted); border:1px solid var(--border); border-radius:8px; padding:14px 16px; font-size:0.88rem; margin-bottom:16px; max-height:190px; overflow-y:auto;">
+              <p style="margin-top:0;"><strong>Tool Lending Library Borrowing Agreement &amp; Waiver</strong></p>
+              <p>1. I confirm that I am at least 18 years of age and will present valid photo ID upon every in-person checkout.</p>
+              <p>2. I agree to use all borrowed tools safely and only for their intended purpose. I release the County Library and its staff from liability for injuries or property damage resulting from tool use.</p>
+              <p>3. I understand I may borrow up to 5 tools for up to 14 days, and that late fees ($1/day standard, $3/day high-demand, capped at the lesser of replacement value or $20) apply after a 1-day grace period.</p>
+              <p style="margin-bottom:0;">4. I will return tools clean and in good working order, and report any damage immediately upon return.</p>
+            </div>
+            <form onsubmit="handleSignWaiver(event)">
+              <label class="checkbox-row">
+                <input type="checkbox" id="waiver-agree" required />
+                <span>I have read and agree to the Tool Lending Library Liability Waiver.</span>
+              </label>
+              <div class="form-group" style="margin-top:12px;">
+                <label class="field-label">Electronic Signature (Type your full name)</label>
+                <input type="text" id="waiver-sig" value="${escapeHtml(d.name)}" required />
+              </div>
+              <div style="display:flex; gap:10px;">
+                <button type="submit" class="btn btn-primary">Sign &amp; Continue to Dashboard</button>
+                <button type="button" class="btn btn-secondary" onclick="navigate('register')">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleSignWaiver(e) {
+      e.preventDefault();
+      const d = ui.regCardData;
+      const newPatron = {
+        id: "P" + (state.patrons.length + 1),
+        name: d.name,
+        firstName: d.name.split(" ")[0],
+        cardNumber: d.cardNumber,
+        email: d.email,
+        password: d.password || "patron123",
+        waiverSigned: true,
+        waiverDate: TODAY,
+        createdAt: TODAY,
+        payments: []
+      };
+      state.patrons.push(newPatron);
+      state.session = { role: "patron", patronId: newPatron.id, staffName: null };
+      ui.regCardData = null;
+      ui.regCardNumber = "";
+      saveState();
+      navigate("patron_dashboard");
+      showToast(`Welcome, ${newPatron.firstName}! Waiver signed and account created.`);
+    }
+
+    function renderStaffLogin() {
+      return `
+        <div class="auth-shell">
+          <div class="card">
+            <div class="badge badge-blue" style="margin-bottom:10px;">Authorized Library Employees Only</div>
+            <h1 class="page-title" style="font-size:1.55rem; margin-bottom:6px;">Staff Portal Login</h1>
+            <p class="small muted" style="margin-top:0; margin-bottom:18px;">All authorized library employees share full administrative access.</p>
+            <div id="staff-login-error"></div>
+            <form onsubmit="handleStaffLogin(event)">
+              <div class="form-group">
+                <label class="field-label">Employee Name</label>
+                <input type="text" id="staff-name" value="Library Clerk" required />
+              </div>
+              <div class="form-group">
+                <label class="field-label">Admin Password</label>
+                <input type="password" id="staff-pass" placeholder="admin123" required />
+              </div>
+              <div style="display:flex; gap:10px;">
+                <button type="submit" class="btn btn-primary" style="flex:1;">Log in to Staff Portal</button>
+                <button type="button" class="btn btn-secondary" onclick="quickStaffLogin()">1-Click Demo</button>
+              </div>
+            </form>
+            <p class="small muted" style="margin-top:14px; margin-bottom:0;">Demo password: <code>admin123</code></p>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleStaffLogin(e) {
+      e.preventDefault();
+      const name = document.getElementById("staff-name").value.trim() || "Library Clerk";
+      const pass = document.getElementById("staff-pass").value;
+      if (pass !== "admin123") {
+        document.getElementById("staff-login-error").innerHTML = `<div class="alert alert-danger small">Incorrect password. Use <code>admin123</code>.</div>`;
+        return;
+      }
+      state.session = { role: "staff", patronId: null, staffName: name };
+      saveState();
+      navigate("staff_home");
+      showToast("Logged into Staff Portal.");
+    }
+
+    function quickStaffLogin() {
+      state.session = { role: "staff", patronId: null, staffName: "Library Clerk" };
+      saveState();
+      navigate("staff_home");
+      showToast("Logged into Staff Portal.");
+    }
+
+    /*************************************************************************
+     * PATRON PORTAL PAGES (UC2 - UC7)
+     *************************************************************************/
+    function renderPatronDashboard() {
+      const p = getCurrentPatron();
+      const activeLoans = getActiveLoansForPatron(p.id);
+      const myRes = state.reservations.filter(r => r.patronId === p.id);
+      const activeHolds = myRes.filter(r => r.status === "Ready for pickup").length;
+      const feesOwed = getPatronOutstandingFees(p.id);
+      const overdueLoans = activeLoans.filter(isLoanOverdue);
+
+      return `
+        <h1 class="page-title" style="margin-bottom:22px;">Welcome back, ${escapeHtml(p.firstName)}</h1>
+
+        <div class="grid-3" style="margin-bottom:20px;">
+          <div class="stat-card">
+            <div class="stat-label">Tools borrowed</div>
+            <div class="stat-value">${activeLoans.length} of 5</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active reservations</div>
+            <div class="stat-value">${activeHolds}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Fees owed</div>
+            <div class="stat-value">${formatMoney(feesOwed)}</div>
+            <button class="link-btn small" style="margin-top:4px;" onclick="navigate('patron_fees')">View and pay fees</button>
+          </div>
+        </div>
+
+        ${overdueLoans.map(l => {
+          const t = getToolType(l.toolTypeId);
+          return `
+            <div class="alert alert-danger">
+              <strong>Overdue:</strong> ${escapeHtml(t.name)} was due ${formatDateShort(l.dueDate)} and fees are accruing. You can't borrow more tools until it is returned.
+            </div>
+          `;
+        }).join("")}
+
+        <div class="card">
+          <div class="card-title">My borrowed tools</div>
+          ${activeLoans.length === 0 ? `<p class="muted small">You currently have no tools checked out. <button class="link-btn" onclick="navigate('patron_browse')">Browse tools</button></p>` : `
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Tool</th><th>Due</th><th>Time left</th><th>Status</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                  ${activeLoans.map(l => renderLoanRow(l)).join("")}
+                </tbody>
+              </table>
+            </div>
+          `}
+          <div style="margin-top:14px;">
+            <button class="link-btn small" onclick="navigate('patron_loans')">View full borrowing history</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Reservations and waitlists</div>
+          ${myRes.length === 0 ? `<p class="muted small">No active reservations or waitlists.</p>` : `
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Tool</th><th>Status</th><th>Details</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                  ${myRes.map(r => renderReservationRow(r)).join("")}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function renderLoanRow(l) {
+      const t = getToolType(l.toolTypeId);
+      const daysDiff = diffDays(TODAY, l.dueDate);
+      const overdue = daysDiff < 0;
+      const waitlistCount = getWaitlistForType(l.toolTypeId).length;
+
+      let timeLeft = overdue
+        ? `${Math.abs(daysDiff)} day${Math.abs(daysDiff) === 1 ? "" : "s"} overdue`
+        : daysDiff === 0 ? "Due today" : `${daysDiff} day${daysDiff === 1 ? "" : "s"}`;
+
+      let statusBadge = overdue
+        ? `<span class="badge badge-red">Unreturned</span>`
+        : `<span class="badge badge-green">On loan</span>`;
+
+      let actionHtml = "";
+      if (overdue) {
+        actionHtml = `<span class="small muted">Renewal not available</span>`;
+      } else if (l.renewed) {
+        actionHtml = `<span class="small muted">Already renewed once</span>`;
+      } else if (l.renewalStatus === "pending") {
+        actionHtml = `<span class="badge badge-amber">Renewal pending</span>`;
+      } else if (l.renewalStatus === "denied") {
+        actionHtml = `<span class="small muted">Denied: ${escapeHtml(l.renewalReason || "Not eligible")}</span>`;
+      } else if (waitlistCount > 0) {
+        actionHtml = `<span class="small muted">Waitlist active (${waitlistCount})</span>`;
+      } else {
+        actionHtml = `<button class="btn btn-secondary btn-sm" onclick="openRenewalModal('${l.id}')">Request renewal</button>`;
+      }
+
+      return `
+        <tr>
+          <td><strong>${escapeHtml(t.name)}</strong></td>
+          <td>${formatDateShort(l.dueDate)}</td>
+          <td>${timeLeft}</td>
+          <td>${statusBadge}</td>
+          <td>${actionHtml}</td>
+        </tr>
+      `;
+    }
+
+    function renderReservationRow(r) {
+      const t = getToolType(r.toolTypeId);
+      const isHold = r.status === "Ready for pickup";
+      let details = "";
+      if (isHold) {
+        details = `Pick up by ${formatDateShort(r.pickupBy)}`;
+      } else {
+        const list = getWaitlistForType(r.toolTypeId);
+        const pos = list.findIndex(item => item.id === r.id) + 1;
+        details = `Position ${pos} of ${list.length}`;
+      }
+      return `
+        <tr>
+          <td><strong>${escapeHtml(t.name)}</strong></td>
+          <td><span class="badge badge-green">${escapeHtml(r.status)}</span></td>
+          <td>${details}</td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="cancelReservation('${r.id}')">
+              ${isHold ? "Cancel reservation" : "Leave waitlist"}
+            </button>
+          </td>
+        </tr>
+      `;
+    }
+
+    function openRenewalModal(loanId) {
+      const l = state.loans.find(x => x.id === loanId);
+      const t = getToolType(l.toolTypeId);
+      const proposedDue = addDays(l.dueDate, l.originalDays || 14);
+      openModal(`
+        <h2 class="card-title">Request Renewal</h2>
+        <p class="small muted">Submit a one-time renewal request for <strong>${escapeHtml(t.name)}</strong>. A library employee will review and approve or deny your request.</p>
+        <table class="kv-table" style="margin-bottom:16px;">
+          <tr><td class="kv-label">Current due date</td><td>${formatDateShort(l.dueDate)}</td></tr>
+          <tr><td class="kv-label">Requested new due date</td><td>${formatDateShort(proposedDue)} (+${l.originalDays || 14} days)</td></tr>
+          <tr><td class="kv-label">Waitlist check</td><td><span class="badge badge-green">No patrons waiting</span></td></tr>
+        </table>
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+          <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="submitRenewalRequest('${l.id}')">Submit request</button>
+        </div>
+      `);
+    }
+
+    function submitRenewalRequest(loanId) {
+      const l = state.loans.find(x => x.id === loanId);
+      if (l) {
+        l.renewalStatus = "pending";
+        saveState();
+        closeModal();
+        render();
+        showToast("Renewal request submitted for staff review.");
+      }
+    }
+
+    function cancelReservation(resId) {
+      const idx = state.reservations.findIndex(r => r.id === resId);
+      if (idx !== -1) {
+        const removed = state.reservations.splice(idx, 1)[0];
+        // If a Ready for pickup hold was cancelled and someone is on waitlist, promote #1
+        if (removed.status === "Ready for pickup") {
+          promoteNextWaitlist(removed.toolTypeId);
+        }
+        saveState();
+        render();
+        showToast(removed.status === "Ready for pickup" ? "Reservation cancelled." : "Removed from waitlist.");
+      }
+    }
+
+    function promoteNextWaitlist(toolTypeId) {
+      const avail = getAvailableUnitsForType(toolTypeId).length;
+      const activeHolds = state.reservations.filter(r => r.toolTypeId === toolTypeId && r.status === "Ready for pickup").length;
+      if (avail > activeHolds) {
+        const next = state.reservations.find(r => r.toolTypeId === toolTypeId && r.status === "Waitlist");
+        if (next) {
+          next.status = "Ready for pickup";
+          next.pickupBy = addDays(TODAY, 3);
+        }
+      }
+    }
+
+    function renderPatronBrowse() {
+      const p = getCurrentPatron();
+      const activeLoans = getActiveLoansForPatron(p.id);
+      const categories = [...new Set(state.toolTypes.map(t => t.category))];
+
+      let list = state.toolTypes.filter(t => {
+        const units = getUnitsForType(t.id);
+        if (units.length === 0) return false; // Hide completely retired tool types from patron browse
+        if (ui.browseSearch && !t.name.toLowerCase().includes(ui.browseSearch.toLowerCase()) && !t.category.toLowerCase().includes(ui.browseSearch.toLowerCase())) return false;
+        if (ui.browseCategory !== "all" && t.category !== ui.browseCategory) return false;
+        if (ui.browseAvailableOnly && getAvailableUnitsForType(t.id).length === 0) return false;
+        if (ui.browseKitsOnly && !t.isKit) return false;
+        return true;
+      });
+
+      if (ui.browseSort === "name") {
+        list.sort((a, b) => a.name.localeCompare(b.name));
+      } else if (ui.browseSort === "availability") {
+        list.sort((a, b) => getAvailableUnitsForType(b.id).length - getAvailableUnitsForType(a.id).length);
+      } else if (ui.browseSort === "category") {
+        list.sort((a, b) => a.category.localeCompare(b.category));
+      }
+
+      return `
+        <div class="page-header">
+          <h1 class="page-title">Browse tools</h1>
+          <div class="small muted">${activeLoans.length} of 5 tool slots in use</div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label">Search tools</label>
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="browse-search-input" placeholder="Try drill, saw, ladder" value="${escapeHtml(ui.browseSearch)}" oninput="ui.browseSearch=this.value; render();" />
+            <button class="btn btn-primary" onclick="render()">Search</button>
+          </div>
+        </div>
+
+        <div class="split-browse" style="margin-top:20px;">
+          <aside class="card" style="padding:18px;">
+            <div class="card-title" style="font-size:1rem;">Filters</div>
+            <div class="form-group">
+              <label class="field-label">Category</label>
+              <select onchange="ui.browseCategory=this.value; render();">
+                <option value="all" ${ui.browseCategory === "all" ? "selected" : ""}>All categories</option>
+                ${categories.map(c => `<option value="${escapeHtml(c)}" ${ui.browseCategory === c ? "selected" : ""}>${escapeHtml(c)}</option>`).join("")}
+              </select>
+            </div>
+            <label class="checkbox-row">
+              <input type="checkbox" ${ui.browseAvailableOnly ? "checked" : ""} onchange="ui.browseAvailableOnly=this.checked; render();" />
+              <span>Available now only</span>
+            </label>
+            <label class="checkbox-row" style="margin-bottom:14px;">
+              <input type="checkbox" ${ui.browseKitsOnly ? "checked" : ""} onchange="ui.browseKitsOnly=this.checked; render();" />
+              <span>Kits only</span>
+            </label>
+            <button class="btn btn-secondary btn-block btn-sm" onclick="ui.browseSearch=''; ui.browseCategory='all'; ui.browseAvailableOnly=false; ui.browseKitsOnly=false; render();">Clear filters</button>
+          </aside>
+
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+              <div class="small muted">${list.length} tool${list.length === 1 ? "" : "s"}</div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="small muted">Sort by</span>
+                <select style="width:auto; padding:6px 10px;" onchange="ui.browseSort=this.value; render();">
+                  <option value="name" ${ui.browseSort === "name" ? "selected" : ""}>Name</option>
+                  <option value="availability" ${ui.browseSort === "availability" ? "selected" : ""}>Availability</option>
+                  <option value="category" ${ui.browseSort === "category" ? "selected" : ""}>Category</option>
+                </select>
+              </div>
+            </div>
+
+            ${list.length === 0 ? `<div class="card"><p class="muted" style="margin:0;">No tools match your current filters.</p></div>` : `
+              <div class="grid-3">
+                ${list.map(t => {
+                  const total = getUnitsForType(t.id).length;
+                  const avail = getAvailableUnitsForType(t.id).length;
+                  const wl = getWaitlistForType(t.id).length;
+                  const badge = avail > 0
+                    ? `<span class="badge badge-green">Available</span>`
+                    : `<span class="badge badge-amber">Waitlist: ${wl} ahead</span>`;
+                  return `
+                    <div class="tool-card">
+                      <div class="tool-photo">
+                        ${renderToolSvg(t.icon, 52)}
+                        <span>${t.isKit ? "Tool kit" : "Tool photo"}</span>
+                      </div>
+                      <div>
+                        <h3 class="tool-name">${escapeHtml(t.name)}</h3>
+                        <div class="small muted">${escapeHtml(t.category)} · ${avail} of ${total} available</div>
+                      </div>
+                      <div>${badge}</div>
+                      <button class="btn ${avail > 0 ? "btn-primary" : "btn-secondary"} btn-block" onclick="navigate('patron_tool', {toolTypeId:'${t.id}'})">View details</button>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPatronToolDetail() {
+      const p = getCurrentPatron();
+      const t = getToolType(route.params.toolTypeId) || state.toolTypes[0];
+      const total = getUnitsForType(t.id).length;
+      const avail = getAvailableUnitsForType(t.id).length;
+      const wl = getWaitlistForType(t.id);
+      const activeLoans = getActiveLoansForPatron(p.id);
+      const existingRes = state.reservations.find(r => r.patronId === p.id && r.toolTypeId === t.id);
+
+      let actionBtn = "";
+      if (existingRes) {
+        actionBtn = `<div class="alert alert-info small" style="margin:14px 0;">You already have a <strong>${escapeHtml(existingRes.status)}</strong> entry for this tool. <button class="link-btn" onclick="navigate('patron_reservations')">Manage reservations</button></div>`;
+      } else if (avail > 0) {
+        actionBtn = `<button class="btn btn-primary" style="margin:14px 0;" onclick="patronReserveTool('${t.id}', 'Ready for pickup')">Reserve tool</button>`;
+      } else {
+        actionBtn = `<button class="btn btn-primary" style="margin:14px 0;" onclick="patronReserveTool('${t.id}', 'Waitlist')">Join waitlist (${wl.length} ahead)</button>`;
+      }
+
+      return `
+        <div style="margin-bottom:16px;">
+          <button class="link-btn small" onclick="navigate('patron_browse')">← Back to results</button>
+        </div>
+
+        <div class="grid-2" style="align-items:start;">
+          <div class="tool-photo tool-photo-lg">
+            ${renderToolSvg(t.icon, 110)}
+            <span>${escapeHtml(t.name)}</span>
+          </div>
+
+          <div class="card" style="margin-bottom:0;">
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+              <h1 class="page-title" style="font-size:1.65rem;">${escapeHtml(t.name)}</h1>
+              ${avail > 0 ? `<span class="badge badge-green">Available</span>` : `<span class="badge badge-amber">Waitlist: ${wl.length} ahead</span>`}
+            </div>
+
+            <table class="kv-table" style="margin-bottom:14px;">
+              <tr><td class="kv-label">Category</td><td>${escapeHtml(t.category)}</td></tr>
+              <tr><td class="kv-label">Units available</td><td>${avail} of ${total}</td></tr>
+              <tr><td class="kv-label">Checkout period</td><td>Up to 14 days, one renewal</td></tr>
+              <tr><td class="kv-label">Late fee class</td><td>${t.feeClass === "high" ? "High-demand ($3/day)" : "Standard ($1/day)"} after 1-day grace period</td></tr>
+              <tr><td class="kv-label">Kit</td><td>${t.isKit ? `Yes (${escapeHtml(t.kitContents)})` : "No"}</td></tr>
+            </table>
+
+            <p class="small muted">${escapeHtml(t.description)}</p>
+            <p class="small muted">Reserving holds a tool for 3 days. Bring your library card and photo ID to the library; staff process every checkout.</p>
+
+            ${actionBtn}
+
+            <p class="small muted">When no units are free, Reserve becomes Join waitlist and shows your place in line.</p>
+
+            <div style="background:var(--surface-muted); border:1px solid var(--border); border-radius:8px; padding:12px 14px; margin-top:16px;">
+              <strong class="small">Your account</strong>
+              <div class="small muted">${activeLoans.length} of 5 tool slots in use. ${p.waiverSigned ? "Waiver signed." : "Waiver required."}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function patronReserveTool(toolTypeId, status) {
+      const p = getCurrentPatron();
+      const t = getToolType(toolTypeId);
+      const res = {
+        id: "R" + Date.now(),
+        patronId: p.id,
+        toolTypeId,
+        status,
+        createdAt: TODAY,
+        pickupBy: status === "Ready for pickup" ? addDays(TODAY, 3) : null
+      };
+      state.reservations.push(res);
+      saveState();
+
+      const wlPos = status === "Waitlist" ? getWaitlistForType(toolTypeId).length : null;
+      openModal(`
+        <div class="badge badge-green" style="margin-bottom:10px;">${status === "Ready for pickup" ? "Reservation Confirmed" : "Added to Waitlist"}</div>
+        <h2 class="card-title">${escapeHtml(t.name)}</h2>
+        ${status === "Ready for pickup"
+          ? `<p class="small">Your tool is on hold until <strong>${formatDateShort(res.pickupBy)}</strong> (3-day pickup window). A confirmation email has been sent to <strong>${escapeHtml(p.email)}</strong>.</p>`
+          : `<p class="small">You are currently <strong>Position #${wlPos}</strong> on the waitlist. We will email <strong>${escapeHtml(p.email)}</strong> with a 3-day pickup window as soon as a unit becomes available.</p>`
+        }
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
+          <button class="btn btn-secondary" onclick="closeModal(); navigate('patron_dashboard');">Back to dashboard</button>
+          <button class="btn btn-primary" onclick="closeModal(); navigate('patron_reservations');">View my reservations</button>
+        </div>
+      `);
+      render();
+    }
+
+    function renderPatronLoans() {
+      const p = getCurrentPatron();
+      const active = getActiveLoansForPatron(p.id);
+      const past = state.loans.filter(l => l.patronId === p.id && l.returnedDate);
+      return `
+        <div class="page-header">
+          <h1 class="page-title">My loans</h1>
+          <button class="link-btn small" onclick="navigate('patron_dashboard')">← Back to dashboard</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Currently borrowed (${active.length} of 5)</div>
+          ${active.length === 0 ? `<p class="small muted">No active loans.</p>` : `
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Tool</th><th>Due</th><th>Time left</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>${active.map(renderLoanRow).join("")}</tbody>
+              </table>
+            </div>
+          `}
+        </div>
+
+        <div class="card">
+          <div class="card-title">Past borrowing history</div>
+          ${past.length === 0 ? `<p class="small muted">No past loans recorded yet.</p>` : `
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Tool</th><th>Checked out</th><th>Due</th><th>Returned</th><th>Status</th></tr></thead>
+                <tbody>
+                  ${past.map(l => `
+                    <tr>
+                      <td><strong>${escapeHtml(getToolType(l.toolTypeId).name)}</strong></td>
+                      <td>${formatDateShort(l.checkoutDate)}</td>
+                      <td>${formatDateShort(l.dueDate)}</td>
+                      <td>${formatDateShort(l.returnedDate)}</td>
+                      <td><span class="badge badge-gray">Returned</span></td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function renderPatronReservations() {
+      const p = getCurrentPatron();
+      const myRes = state.reservations.filter(r => r.patronId === p.id);
+      return `
+        <div class="page-header">
+          <h1 class="page-title">Reservations and waitlists</h1>
+          <button class="link-btn small" onclick="navigate('patron_dashboard')">← Back to dashboard</button>
+        </div>
+
+        <div class="card">
+          ${myRes.length === 0 ? `<p class="small muted">You have no active reservations or waitlist entries. <button class="link-btn" onclick="navigate('patron_browse')">Browse tools</button></p>` : `
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Tool</th><th>Status</th><th>Details</th><th>Action</th></tr></thead>
+                <tbody>${myRes.map(renderReservationRow).join("")}</tbody>
+              </table>
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function renderPatronFees() {
+      const p = getCurrentPatron();
+      const balance = getPatronOutstandingFees(p.id);
+      const chargedLoans = state.loans
+        .filter(l => l.patronId === p.id)
+        .map(l => ({ loan: l, fee: computeLoanFeeDetails(l) }))
+        .filter(x => x.fee.unpaid > 0);
+
+      return `
+        <h1 class="page-title" style="margin-bottom:20px;">Fees</h1>
+
+        <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div>
+            <div class="small muted">Outstanding balance</div>
+            <div class="stat-value" style="margin:4px 0;">${formatMoney(balance)}</div>
+            <div class="small muted">You can also pay in person at the library.</div>
+          </div>
+          <button class="btn btn-primary" ${balance <= 0 ? "disabled" : ""} onclick="openOnlinePaymentModal(${balance})">Pay online</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Current charges</div>
+          ${chargedLoans.length === 0 ? `<p class="small muted">You have no unpaid charges. Thank you!</p>` : `
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Tool</th><th>Due</th><th>Returned</th><th>Days charged</th><th>Late rate</th><th>Fee</th></tr>
+                </thead>
+                <tbody>
+                  ${chargedLoans.map(({ loan, fee }) => `
+                    <tr>
+                      <td><strong>${escapeHtml(getToolType(loan.toolTypeId).name)}</strong></td>
+                      <td>${formatDateShort(loan.dueDate)}</td>
+                      <td>${loan.returnedDate ? formatDateShort(loan.returnedDate) : "Unreturned"}</td>
+                      <td>${fee.chargedDays} (after grace period)</td>
+                      <td>$${fee.dailyRate} per day</td>
+                      <td><strong>${formatMoney(fee.unpaid)}</strong></td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
+          `}
+          <p class="small muted" style="margin-top:14px; margin-bottom:0;">A loan's fee never exceeds the lower of the tool's replacement value or $20.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Payment history</div>
+          ${p.payments.length === 0 ? `<p class="small muted">No payments recorded.</p>` : `
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Date</th><th>Method</th><th>Amount</th><th>Receipt</th></tr></thead>
+                <tbody>
+                  ${p.payments.map(pay => `
+                    <tr>
+                      <td>${formatDateShort(pay.date)}</td>
+                      <td>${escapeHtml(pay.method)}</td>
+                      <td>${formatMoney(pay.amount)}</td>
+                      <td><button class="link-btn" onclick="viewReceiptModal('${pay.id}')">View</button></td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </div>
+
+        <button class="link-btn small" onclick="navigate('patron_dashboard')">← Back to dashboard</button>
+      `;
+    }
+
+    function openOnlinePaymentModal(balance) {
+      openModal(`
+        <h2 class="card-title">Pay Fees Online</h2>
+        <p class="small muted">Simulated payment gateway for prototype testing.</p>
+        <form onsubmit="handleOnlinePayment(event, ${balance})">
+          <div class="form-group">
+            <label class="field-label">Amount to Pay</label>
+            <input type="text" value="${formatMoney(balance)}" disabled />
+          </div>
+          <div class="form-group">
+            <label class="field-label">Cardholder Name</label>
+            <input type="text" value="${escapeHtml(getCurrentPatron().name)}" required />
+          </div>
+          <div class="form-group">
+            <label class="field-label">Card Number (Mock)</label>
+            <input type="text" value="4242 •••• •••• 4242" required />
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Submit payment (${formatMoney(balance)})</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function handleOnlinePayment(e, amount) {
+      e.preventDefault();
+      const p = getCurrentPatron();
+      recordPaymentForPatron(p.id, amount, "Online");
+      closeModal();
+      render();
+      showToast(`Payment of ${formatMoney(amount)} processed! Receipt saved.`);
+    }
+
+    function recordPaymentForPatron(patronId, amount, method) {
+      const p = getPatron(patronId);
+      let remaining = Number(amount);
+      state.loans.filter(l => l.patronId === patronId).forEach(l => {
+        if (remaining <= 0) return;
+        const fee = computeLoanFeeDetails(l);
+        if (fee.unpaid > 0) {
+          const apply = Math.min(fee.unpaid, remaining);
+          l.feePaid = (l.feePaid || 0) + apply;
+          remaining -= apply;
+        }
+      });
+      p.payments.unshift({
+        id: "PAY-" + Math.floor(1000 + Math.random() * 9000),
+        date: TODAY,
+        method,
+        amount: Number(amount),
+        note: "Overdue tool fee payment"
+      });
+      saveState();
+    }
+
+    function viewReceiptModal(payId) {
+      const p = getCurrentPatron();
+      const pay = p.payments.find(x => x.id === payId);
+      if (!pay) return;
+      openModal(`
+        <div class="badge badge-green" style="margin-bottom:10px;">Payment Receipt</div>
+        <h2 class="card-title">Receipt #${escapeHtml(pay.id)}</h2>
+        <table class="kv-table" style="margin-bottom:16px;">
+          <tr><td class="kv-label">Patron</td><td>${escapeHtml(p.name)}</td></tr>
+          <tr><td class="kv-label">Date</td><td>${formatDateShort(pay.date)}</td></tr>
+          <tr><td class="kv-label">Payment Method</td><td>${escapeHtml(pay.method)}</td></tr>
+          <tr><td class="kv-label">Amount Paid</td><td><strong>${formatMoney(pay.amount)}</strong></td></tr>
+        </table>
+        <div style="display:flex; justify-content:flex-end;">
+          <button class="btn btn-primary" onclick="closeModal()">Done</button>
+        </div>
+      `);
+    }
+
+    /*************************************************************************
+     * STAFF PORTAL PAGES (E1 - E10)
+     *************************************************************************/
+    function renderStaffHome() {
+      const activeLoans = state.loans.filter(l => !l.returnedDate);
+      const overdue = activeLoans.filter(isLoanOverdue);
+      const pendingRenewals = activeLoans.filter(l => l.renewalStatus === "pending");
+      const outOfService = state.units.filter(u => u.status === "Out of service");
+
+      return `
+        <div class="page-header">
+          <h1 class="page-title">Staff Dashboard</h1>
+          <div class="small muted">Signed in as <strong>${escapeHtml(state.session.staffName || "Library Clerk")}</strong></div>
+        </div>
+
+        <div class="grid-4" style="margin-bottom:22px;">
+          <div class="stat-card">
+            <div class="stat-label">Active loans</div>
+            <div class="stat-value">${activeLoans.length}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Overdue / Unreturned</div>
+            <div class="stat-value" style="color:var(--red-text);">${overdue.length}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Pending renewals</div>
+            <div class="stat-value" style="color:var(--accent);">${pendingRenewals.length}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Tools in repair</div>
+            <div class="stat-value">${outOfService.length}</div>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-title">Checkout &amp; Eligibility (E1, E2)</div>
+            <p class="small muted">Verify County Library card, waiver, 18+ photo ID, and scan tool barcodes for up to 14 days.</p>
+            <button class="btn btn-primary" onclick="startCheckoutFlow()">Process checkout</button>
+          </div>
+          <div class="card">
+            <div class="card-title">Return &amp; Inspection (E3, E10)</div>
+            <p class="small muted">Scan returned tools, inspect kit components, and flag damaged units out of service.</p>
+            <button class="btn btn-primary" onclick="startReturnFlow()">Process return</button>
+          </div>
+          <div class="card">
+            <div class="card-title">Review Renewals (E4)</div>
+            <p class="small muted">${pendingRenewals.length} pending renewal request${pendingRenewals.length === 1 ? "" : "s"} waiting for staff approval or denial.</p>
+            <button class="btn btn-secondary" onclick="navigate('staff_renewals')">Review renewals</button>
+          </div>
+          <div class="card">
+            <div class="card-title">Inventory Management (E5, E10)</div>
+            <p class="small muted">Add new tools, edit details, flag maintenance issues, or retire worn-out units.</p>
+            <button class="btn btn-secondary" onclick="navigate('staff_inventory')">Manage inventory</button>
+          </div>
+          <div class="card">
+            <div class="card-title">Unreturned &amp; Payments (E7, E8)</div>
+            <p class="small muted">Track overdue loans, inspect patron accounts, and record in-person fee payments.</p>
+            <button class="btn btn-secondary" onclick="navigate('staff_unreturned')">View unreturned &amp; accounts</button>
+          </div>
+          <div class="card">
+            <div class="card-title">Library Reports (E9)</div>
+            <p class="small muted">Generate live reports for active loans, overdue tools, tools in repair, and most borrowed.</p>
+            <button class="btn btn-secondary" onclick="navigate('staff_reports')">Open reports</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- STAFF CHECKOUT FLOW (E1 + E2) ---
+    function startCheckoutFlow() {
+      ui.checkoutStep = 1;
+      ui.checkoutPatronId = null;
+      ui.checkoutAgeVerified = false;
+      ui.checkoutLastLoanId = null;
+      navigate("staff_checkout");
+    }
+
+    function renderStaffCheckout() {
+      if (ui.checkoutStep === 2 && ui.checkoutPatronId) return renderStaffCheckoutEligibility();
+      if (ui.checkoutStep === 3 && ui.checkoutPatronId) return renderStaffCheckoutScan();
+      if (ui.checkoutStep === 4 && ui.checkoutLastLoanId) return renderStaffCheckoutDone();
+
+      return `
+        <div class="breadcrumb">Checkout · Step 1 of 4: Find patron</div>
+        <h1 class="page-title" style="margin-bottom:20px;">Process checkout</h1>
+        <div class="card">
+          <div class="card-title">Look up patron by name or library card</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Patron</th><th>Library Card</th><th>Active Loans</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody>
+                ${state.patrons.map(p => {
+                  const active = getActiveLoansForPatron(p.id).length;
+                  const overdue = patronHasOverdue(p.id);
+                  const holds = state.reservations.filter(r => r.patronId === p.id && r.status === "Ready for pickup");
+                  return `
+                    <tr>
+                      <td>
+                        <strong>${escapeHtml(p.name)}</strong>
+                        ${holds.length ? `<div class="small muted">Hold: ${holds.map(h => getToolType(h.toolTypeId).name).join(", ")}</div>` : ""}
+                      </td>
+                      <td><code>${escapeHtml(p.cardNumber)}</code></td>
+                      <td>${active} of 5</td>
+                      <td>${overdue ? `<span class="badge badge-red">Has unreturned</span>` : `<span class="badge badge-green">In good standing</span>`}</td>
+                      <td><button class="btn btn-primary btn-sm" onclick="selectCheckoutPatron('${p.id}')">Check eligibility</button></td>
+                    </tr>
+                  `;
+                }).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function selectCheckoutPatron(patronId) {
+      ui.checkoutPatronId = patronId;
+      ui.checkoutAgeVerified = false;
+      ui.checkoutStep = 2;
+      render();
+    }
+
+    function renderStaffCheckoutEligibility() {
+      const p = getPatron(ui.checkoutPatronId);
+      const apiCard = state.countyApiCards[p.cardNumber];
+      const cardValid = !!(apiCard && apiCard.valid);
+      const activeCount = getActiveLoansForPatron(p.id).length;
+      const underLimit = activeCount < 5;
+      const noOverdue = !patronHasOverdue(p.id);
+      const allPass = cardValid && p.waiverSigned && underLimit && noOverdue && ui.checkoutAgeVerified;
+      const holds = state.reservations.filter(r => r.patronId === p.id && r.status === "Ready for pickup");
+
+      return `
+        <div class="breadcrumb">Checkout · Step 2 of 4: Check eligibility</div>
+        <h1 class="page-title" style="margin-bottom:20px;">Check eligibility: ${escapeHtml(p.firstName)}</h1>
+
+        <div class="grid-2" style="align-items:start;">
+          <div class="card" style="margin-bottom:0;">
+            <div class="card-title">Patron</div>
+            <div>Library card ending ${cardEnding(p.cardNumber)}</div>
+            <div style="margin-bottom:12px;">Account created ${formatDateShort(p.createdAt)}</div>
+            ${holds.map(h => `<div class="small muted">Reserved: ${escapeHtml(getToolType(h.toolTypeId).name)}, hold until ${formatDateShort(h.pickupBy)}</div>`).join("")}
+          </div>
+
+          <div class="card" style="margin-bottom:0;">
+            <div class="card-title">Checks</div>
+            <table>
+              <thead><tr><th>Requirement</th><th style="text-align:right;">Result</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>Library card is valid (county API)</td>
+                  <td style="text-align:right;">${cardValid ? `<span class="badge badge-green">Pass</span>` : `<span class="badge badge-red">Fail</span>`}</td>
+                </tr>
+                <tr>
+                  <td>Account and signed waiver</td>
+                  <td style="text-align:right;">${p.waiverSigned ? `<span class="badge badge-green">Pass</span>` : `<span class="badge badge-red">Fail</span>`}</td>
+                </tr>
+                <tr>
+                  <td>Under 5 tools checked out (${activeCount} now)</td>
+                  <td style="text-align:right;">${underLimit ? `<span class="badge badge-green">Pass</span>` : `<span class="badge badge-red">Fail</span>`}</td>
+                </tr>
+                <tr>
+                  <td>No unreturned tools</td>
+                  <td style="text-align:right;">${noOverdue ? `<span class="badge badge-green">Pass</span>` : `<span class="badge badge-red">Fail</span>`}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <label class="checkbox-row" style="margin:0;">
+                      <input type="checkbox" ${ui.checkoutAgeVerified ? "checked" : ""} onchange="ui.checkoutAgeVerified=this.checked; render();" />
+                      <span>Photo ID shows patron is 18 or older</span>
+                    </label>
+                  </td>
+                  <td style="text-align:right;">
+                    ${ui.checkoutAgeVerified ? `<span class="badge badge-green">Pass</span>` : `<span class="badge badge-red">Needs staff check</span>`}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-top:20px;">
+          <button class="btn btn-primary" ${allPass ? "" : "disabled"} onclick="ui.checkoutStep=3; render();">Eligible, continue to scan tool</button>
+          <button class="btn btn-secondary" onclick="navigate('staff_home'); showToast('Checkout refused.');">Refuse checkout</button>
+        </div>
+      `;
+    }
+
+    function renderStaffCheckoutScan() {
+      const p = getPatron(ui.checkoutPatronId);
+      const availUnits = state.units.filter(u => u.status === "Available");
+      return `
+        <div class="breadcrumb">Checkout · Step 3 of 4: Scan tool</div>
+        <h1 class="page-title" style="margin-bottom:20px;">Scan tool for ${escapeHtml(p.name)}</h1>
+
+        <div class="grid-2" style="align-items:start;">
+          <div class="card">
+            <div class="card-title">Enter or scan tool barcode</div>
+            <div id="checkout-scan-error"></div>
+            <form onsubmit="completeStaffCheckout(event)">
+              <div class="form-group">
+                <label class="field-label">Tool Barcode</label>
+                <input type="text" id="checkout-barcode" placeholder="e.g. BC-CS-001" required />
+              </div>
+              <div class="form-group">
+                <label class="field-label">Checkout Duration (1–14 days)</label>
+                <input type="number" id="checkout-days" min="1" max="14" value="14" required />
+              </div>
+              <div style="display:flex; gap:10px;">
+                <button type="submit" class="btn btn-primary">Confirm checkout</button>
+                <button type="button" class="btn btn-secondary" onclick="ui.checkoutStep=2; render();">Back</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Quick-select available barcodes</div>
+            <p class="small muted" style="margin-top:0;">Click any barcode to fill the scanner input (kits count as 1 tool).</p>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              ${availUnits.map(u => {
+                const t = getToolType(u.toolTypeId);
+                return `
+                  <button type="button" class="btn btn-secondary btn-sm" style="justify-content:space-between;" onclick="document.getElementById('checkout-barcode').value='${u.barcode}'">
+                    <span><strong>${escapeHtml(t.name)}</strong> ${t.isKit ? "(Kit)" : ""}</span>
+                    <code>${u.barcode}</code>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function completeStaffCheckout(e) {
+      e.preventDefault();
+      const barcode = document.getElementById("checkout-barcode").value.trim().toUpperCase();
+      const days = Math.min(14, Math.max(1, Number(document.getElementById("checkout-days").value) || 14));
+      const unit = state.units.find(u => u.barcode.toUpperCase() === barcode);
+      const err = document.getElementById("checkout-scan-error");
+
+      if (!unit) {
+        err.innerHTML = `<div class="alert alert-danger small">Barcode <code>${escapeHtml(barcode)}</code> not found in inventory.</div>`;
+        return;
+      }
+      if (unit.status !== "Available") {
+        err.innerHTML = `<div class="alert alert-danger small">Scan rejected: Unit <strong>${escapeHtml(unit.id)}</strong> is currently <strong>${escapeHtml(unit.status)}</strong>.</div>`;
+        return;
+      }
+
+      const patronId = ui.checkoutPatronId;
+      unit.status = "Checked out";
+      const dueDate = addDays(TODAY, days);
+      const loan = {
+        id: "L" + Date.now(),
+        patronId,
+        toolTypeId: unit.toolTypeId,
+        unitId: unit.id,
+        checkoutDate: TODAY,
+        dueDate,
+        originalDays: days,
+        returnedDate: null,
+        renewed: false,
+        renewalStatus: null,
+        renewalReason: "",
+        feePaid: 0
+      };
+      state.loans.push(loan);
+
+      // Fulfill any matching reservation held by this patron
+      const resIdx = state.reservations.findIndex(r => r.patronId === patronId && r.toolTypeId === unit.toolTypeId && r.status === "Ready for pickup");
+      if (resIdx !== -1) state.reservations.splice(resIdx, 1);
+
+      saveState();
+      ui.checkoutLastLoanId = loan.id;
+      ui.checkoutStep = 4;
+      render();
+      showToast("Tool checked out successfully!");
+    }
+
+    function renderStaffCheckoutDone() {
+      const loan = state.loans.find(l => l.id === ui.checkoutLastLoanId);
+      const p = getPatron(loan.patronId);
+      const t = getToolType(loan.toolTypeId);
+      const u = getUnit(loan.unitId);
+      return `
+        <div class="breadcrumb">Checkout · Step 4 of 4: Confirmation</div>
+        <div class="card" style="max-width:600px;">
+          <div class="badge badge-green" style="margin-bottom:10px;">Checkout Complete</div>
+          <h1 class="page-title" style="font-size:1.5rem; margin-bottom:16px;">${escapeHtml(t.name)} checked out</h1>
+          <table class="kv-table" style="margin-bottom:20px;">
+            <tr><td class="kv-label">Borrower</td><td>${escapeHtml(p.name)} (${escapeHtml(p.cardNumber)})</td></tr>
+            <tr><td class="kv-label">Unit / Barcode</td><td>${escapeHtml(u.id)} · <code>${escapeHtml(u.barcode)}</code></td></tr>
+            <tr><td class="kv-label">Checkout Date</td><td>${formatDateShort(loan.checkoutDate)}</td></tr>
+            <tr><td class="kv-label">Due Date</td><td><strong>${formatDateShort(loan.dueDate)}</strong> (${loan.originalDays} days)</td></tr>
+          </table>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-primary" onclick="startCheckoutFlow()">Check out another tool</button>
+            <button class="btn btn-secondary" onclick="navigate('staff_home')">Done</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- STAFF RETURN & INSPECTION FLOW (E3 + E10) ---
+    function startReturnFlow() {
+      ui.returnStep = 1;
+      ui.returnUnitId = null;
+      ui.returnLastInfo = null;
+      navigate("staff_return");
+    }
+
+    function renderStaffReturn() {
+      if (ui.returnStep === 2 && ui.returnUnitId) return renderStaffReturnInspect();
+      if (ui.returnStep === 3 && ui.returnLastInfo) return renderStaffReturnDone();
+
+      const activeLoans = state.loans.filter(l => !l.returnedDate);
+      return `
+        <div class="breadcrumb">Return · Step 1 of 3: Scan tool</div>
+        <h1 class="page-title" style="margin-bottom:20px;">Process return</h1>
+
+        <div class="card">
+          <div class="card-title">Scan barcode or select a checked-out tool</div>
+          <div id="return-scan-error"></div>
+          <form onsubmit="handleReturnScan(event)" style="display:flex; gap:10px; margin-bottom:20px;">
+            <input type="text" id="return-barcode" placeholder="Scan barcode (e.g. BC-ES-001)" required />
+            <button type="submit" class="btn btn-primary">Look up tool</button>
+          </form>
+
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tool</th><th>Barcode</th><th>Borrower</th><th>Due</th><th>Action</th></tr></thead>
+              <tbody>
+                ${activeLoans.map(l => {
+                  const t = getToolType(l.toolTypeId);
+                  const u = getUnit(l.unitId);
+                  const p = getPatron(l.patronId);
+                  const overdue = isLoanOverdue(l);
+                  return `
+                    <tr>
+                      <td><strong>${escapeHtml(t.name)}</strong> ${t.isKit ? `<span class="badge badge-blue">Kit</span>` : ""}</td>
+                      <td><code>${escapeHtml(u.barcode)}</code></td>
+                      <td>${escapeHtml(p.name)}</td>
+                      <td>${formatDateShort(l.dueDate)} ${overdue ? `<span class="badge badge-red">Overdue</span>` : ""}</td>
+                      <td><button class="btn btn-secondary btn-sm" onclick="selectReturnUnit('${u.id}')">Inspect return</button></td>
+                    </tr>
+                  `;
+                }).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleReturnScan(e) {
+      e.preventDefault();
+      const bc = document.getElementById("return-barcode").value.trim().toUpperCase();
+      const unit = state.units.find(u => u.barcode.toUpperCase() === bc && u.status === "Checked out");
+      if (!unit) {
+        document.getElementById("return-scan-error").innerHTML = `<div class="alert alert-danger small">No checked-out tool found with barcode <code>${escapeHtml(bc)}</code>.</div>`;
+        return;
+      }
+      selectReturnUnit(unit.id);
+    }
+
+    function selectReturnUnit(unitId) {
+      ui.returnUnitId = unitId;
+      ui.returnStep = 2;
+      render();
+    }
+
+    function renderStaffReturnInspect() {
+      const u = getUnit(ui.returnUnitId);
+      const loan = state.loans.find(l => l.unitId === u.id && !l.returnedDate);
+      const t = getToolType(u.toolTypeId);
+      const p = getPatron(loan.patronId);
+      const fee = computeLoanFeeDetails(loan);
+      const overdue = isLoanOverdue(loan);
+
+      return `
+        <div class="breadcrumb">Return · Step 2 of 3: Inspect tool</div>
+        <h1 class="page-title" style="margin-bottom:20px;">Inspect returned tool</h1>
+
+        <form onsubmit="completeStaffReturn(event)">
+          <div class="grid-2" style="align-items:start;">
+            <div class="card" style="margin-bottom:0;">
+              <div class="card-title">${escapeHtml(t.name)}</div>
+              <table class="kv-table">
+                <tr><td class="kv-label">Barcode</td><td><code>${escapeHtml(u.barcode)}</code></td></tr>
+                <tr><td class="kv-label">Borrower</td><td>${escapeHtml(p.name)}</td></tr>
+                <tr><td class="kv-label">Due</td><td>${formatDateShort(loan.dueDate)} · ${overdue ? `${fee.daysLate} days late` : "returned on time"}</td></tr>
+                <tr><td class="kv-label">Late fees</td><td>${fee.unpaid > 0 ? `<strong>${formatMoney(fee.unpaid)}</strong> (remains on account)` : "None"}</td></tr>
+              </table>
+              ${t.isKit ? `<div class="alert alert-info small" style="margin-top:14px; margin-bottom:0;"><strong>Kit inventory label:</strong> ${escapeHtml(t.kitContents)}</div>` : ""}
+            </div>
+
+            <div class="card" style="margin-bottom:0;">
+              <div class="card-title">Condition</div>
+              <label class="checkbox-row">
+                <input type="radio" name="cond" value="good" checked onchange="document.getElementById('flag-oos').checked=false;" />
+                <span>Good working order</span>
+              </label>
+              <label class="checkbox-row" style="margin-bottom:14px;">
+                <input type="radio" name="cond" value="damaged" onchange="document.getElementById('flag-oos').checked=true;" />
+                <span>Damaged or missing parts</span>
+              </label>
+
+              <div class="small muted" style="margin-bottom:6px;">Kit components (kits only)</div>
+              <label class="checkbox-row" style="margin-bottom:14px;">
+                <input type="checkbox" id="kit-check" ${t.isKit ? "checked" : ""} />
+                <span>Every component matches the kit label</span>
+              </label>
+
+              <div class="form-group">
+                <label class="field-label">Condition notes</label>
+                <textarea id="return-notes" placeholder="Describe any damage, missing parts, or maintenance needed..."></textarea>
+              </div>
+
+              <label class="checkbox-row" style="margin-bottom:0;">
+                <input type="checkbox" id="flag-oos" />
+                <span>Flag out of service after return</span>
+              </label>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:12px; margin-top:20px;">
+            <button type="submit" class="btn btn-primary">Complete return</button>
+            <button type="button" class="btn btn-secondary" onclick="startReturnFlow()">Cancel</button>
+          </div>
+        </form>
+      `;
+    }
+
+    function completeStaffReturn(e) {
+      e.preventDefault();
+      const u = getUnit(ui.returnUnitId);
+      const loan = state.loans.find(l => l.unitId === u.id && !l.returnedDate);
+      const t = getToolType(u.toolTypeId);
+      const p = getPatron(loan.patronId);
+      const notes = document.getElementById("return-notes").value.trim();
+      const flagOos = document.getElementById("flag-oos").checked;
+
+      loan.returnedDate = TODAY;
+      t.historicalLoans = (t.historicalLoans || 0) + 1;
+
+      let promotedPatronName = null;
+      if (flagOos) {
+        u.status = "Out of service";
+        u.note = notes || "Flagged damaged/needs maintenance during return inspection.";
+      } else {
+        u.status = "Available";
+        u.note = "";
+        // Promote first patron on waitlist if any
+        const nextWait = state.reservations.find(r => r.toolTypeId === t.id && r.status === "Waitlist");
+        if (nextWait) {
+          nextWait.status = "Ready for pickup";
+          nextWait.pickupBy = addDays(TODAY, 3);
+          promotedPatronName = getPatron(nextWait.patronId).name;
+        }
+      }
+
+      saveState();
+      ui.returnLastInfo = {
+        toolName: t.name,
+        barcode: u.barcode,
+        patronName: p.name,
+        newStatus: u.status,
+        promotedPatronName
+      };
+      ui.returnStep = 3;
+      render();
+      showToast("Return completed.");
+    }
+
+    function renderStaffReturnDone() {
+      const info = ui.returnLastInfo;
+      return `
+        <div class="breadcrumb">Return · Step 3 of 3: Confirmation</div>
+        <div class="card" style="max-width:600px;">
+          <div class="badge badge-green" style="margin-bottom:10px;">Return Completed</div>
+          <h1 class="page-title" style="font-size:1.5rem; margin-bottom:12px;">${escapeHtml(info.toolName)} returned</h1>
+          <p class="small">Returned by <strong>${escapeHtml(info.patronName)}</strong> (<code>${escapeHtml(info.barcode)}</code>).</p>
+          <p class="small">New unit status: <span class="badge ${info.newStatus === "Available" ? "badge-green" : "badge-red"}">${escapeHtml(info.newStatus)}</span></p>
+          ${info.promotedPatronName ? `<div class="alert alert-info small"><strong>Waitlist advanced:</strong> ${escapeHtml(info.promotedPatronName)} has been notified and given a 3-day pickup hold.</div>` : ""}
+          <div style="display:flex; gap:10px; margin-top:16px;">
+            <button class="btn btn-primary" onclick="startReturnFlow()">Process another return</button>
+            <button class="btn btn-secondary" onclick="navigate('staff_home')">Done</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- STAFF RENEWALS (E4) ---
+    function renderStaffRenewals() {
+      const pending = state.loans.filter(l => !l.returnedDate && l.renewalStatus === "pending");
+      return `
+        <h1 class="page-title" style="margin-bottom:20px;">Renewal requests</h1>
+        <div class="card">
+          ${pending.length === 0 ? `<p class="small muted">No pending renewal requests right now.</p>` : `
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Patron</th><th>Tool</th><th>Current Due</th><th>Waitlist</th><th>Actions</th></tr></thead>
+                <tbody>
+                  ${pending.map(l => {
+                    const p = getPatron(l.patronId);
+                    const t = getToolType(l.toolTypeId);
+                    const wl = getWaitlistForType(l.toolTypeId).length;
+                    return `
+                      <tr>
+                        <td><strong>${escapeHtml(p.name)}</strong></td>
+                        <td>${escapeHtml(t.name)}</td>
+                        <td>${formatDateShort(l.dueDate)}</td>
+                        <td>${wl > 0 ? `<span class="badge badge-amber">${wl} waiting</span>` : `<span class="badge badge-green">None</span>`}</td>
+                        <td style="display:flex; gap:8px;">
+                          <button class="btn btn-primary btn-sm" ${wl > 0 ? "disabled" : ""} onclick="approveRenewal('${l.id}')">Approve (+${l.originalDays || 14}d)</button>
+                          <button class="btn btn-secondary btn-sm" onclick="openDenyRenewalModal('${l.id}')">Deny</button>
+                        </td>
+                      </tr>
+                    `;
+                  }).join("")}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function approveRenewal(loanId) {
+      const l = state.loans.find(x => x.id === loanId);
+      if (!l) return;
+      l.dueDate = addDays(l.dueDate, l.originalDays || 14);
+      l.renewed = true;
+      l.renewalStatus = "approved";
+      saveState();
+      render();
+      showToast(`Renewal approved! New due date: ${formatDateShort(l.dueDate)}.`);
+    }
+
+    function openDenyRenewalModal(loanId) {
+      openModal(`
+        <h2 class="card-title">Deny Renewal Request</h2>
+        <form onsubmit="confirmDenyRenewal(event, '${loanId}')">
+          <div class="form-group">
+            <label class="field-label">Reason for denial (sent to patron)</label>
+            <input type="text" id="deny-reason" value="Another patron is waiting for this tool." required />
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Deny request</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function confirmDenyRenewal(e, loanId) {
+      e.preventDefault();
+      const l = state.loans.find(x => x.id === loanId);
+      if (l) {
+        l.renewalStatus = "denied";
+        l.renewalReason = document.getElementById("deny-reason").value.trim();
+        saveState();
+      }
+      closeModal();
+      render();
+      showToast("Renewal request denied and patron notified.");
+    }
+
+    // --- STAFF INVENTORY (E5 + E10) ---
+    function renderStaffInventory() {
+      const total = state.units.length;
+      const avail = state.units.filter(u => u.status === "Available").length;
+      const out = state.units.filter(u => u.status === "Checked out").length;
+      const oos = state.units.filter(u => u.status === "Out of service").length;
+      const retired = state.units.filter(u => u.status === "Retired").length;
+
+      return `
+        <div class="page-header">
+          <h1 class="page-title">Inventory</h1>
+          <div class="small muted">${total} units · ${avail} available · ${out} checked out · ${oos} out of service · ${retired} retired</div>
+        </div>
+
+        <div class="split-inventory">
+          <div class="card">
+            <div class="card-title">Tools (${total} units, ${state.toolTypes.length} tool types)</div>
+            ${state.toolTypes.map(t => {
+              const units = state.units.filter(u => u.toolTypeId === t.id);
+              const availCount = units.filter(u => u.status === "Available").length;
+              const expanded = !!ui.expandedInvGroups[t.id];
+              return `
+                <div class="inv-group">
+                  <div class="inv-group-header" onclick="ui.expandedInvGroups['${t.id}']=!ui.expandedInvGroups['${t.id}']; render();">
+                    <div>
+                      <strong>${escapeHtml(t.name)}</strong>
+                      ${expanded ? `<div class="small muted" style="margin-top:3px;">${escapeHtml(t.category)} · ${t.feeClass === "high" ? "High-demand ($3/day)" : "Standard ($1/day)"} · Replacement value $${t.replacementValue} · ${t.isKit ? "Kit" : "Not a kit"}</div>` : ""}
+                    </div>
+                    <div class="small muted">${units.length} unit${units.length === 1 ? "" : "s"} · ${availCount} available ${expanded ? "▾" : "▸"}</div>
+                  </div>
+
+                  ${expanded ? `
+                    <div class="table-wrap" style="margin-top:12px;">
+                      <table>
+                        <thead><tr><th>Unit ID</th><th>Barcode</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody>
+                          ${units.map(u => {
+                            const statusBadge =
+                              u.status === "Available" ? `<span class="badge badge-green">Available</span>` :
+                              u.status === "Checked out" ? `<span class="badge badge-blue">Checked out</span>` :
+                              u.status === "Out of service" ? `<span class="badge badge-red">Out of service</span>` :
+                              `<span class="badge badge-gray">Retired</span>`;
+                            return `
+                              <tr>
+                                <td><code>${escapeHtml(u.id)}</code></td>
+                                <td><code>${escapeHtml(u.barcode)}</code></td>
+                                <td>
+                                  ${statusBadge}
+                                  ${u.note ? `<div class="small muted" style="margin-top:4px; max-width:200px;">${escapeHtml(u.note)}</div>` : ""}
+                                </td>
+                                <td>
+                                  <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                                    <button class="btn btn-secondary btn-sm" onclick="openEditToolModal('${t.id}')">Edit</button>
+                                    ${u.status === "Available" ? `<button class="btn btn-secondary btn-sm" onclick="openFlagOosModal('${u.id}')">Flag out of service</button>` : ""}
+                                    ${u.status === "Out of service" ? `<button class="btn btn-primary btn-sm" onclick="markUnitInService('${u.id}')">Mark in service</button>` : ""}
+                                    ${u.status !== "Retired" ? `
+                                      <button class="btn btn-secondary btn-sm" ${u.status === "Checked out" ? "disabled" : ""} onclick="retireUnit('${u.id}')">Retire</button>
+                                    ` : ""}
+                                  </div>
+                                  ${u.status === "Checked out" ? `<div class="small muted" style="font-size:0.76rem; margin-top:3px;">Return it before retiring</div>` : ""}
+                                </td>
+                              </tr>
+                            `;
+                          }).join("")}
+                        </tbody>
+                      </table>
+                    </div>
+                  ` : ""}
+                </div>
+              `;
+            }).join("")}
+          </div>
+
+          <div class="card">
+            <div class="card-title">Add tool</div>
+            <form onsubmit="handleAddTool(event)">
+              <div class="form-group">
+                <label class="field-label">Tool name</label>
+                <input type="text" id="add-name" placeholder="e.g. Tile saw" required />
+              </div>
+              <div class="form-group">
+                <label class="field-label">Category</label>
+                <select id="add-cat">
+                  <option>Power tools</option>
+                  <option>Hand tools</option>
+                  <option>Yard and garden</option>
+                  <option>Automotive &amp; Plumbing</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="field-label">Fee class</label>
+                <select id="add-fee">
+                  <option value="standard">Standard ($1 per day)</option>
+                  <option value="high">High-demand ($3 per day)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="field-label">Replacement value ($)</label>
+                <input type="number" id="add-val" min="5" value="85" required />
+              </div>
+              <label class="checkbox-row" style="margin-bottom:14px;">
+                <input type="checkbox" id="add-kit" />
+                <span>This tool is a kit</span>
+              </label>
+              <div class="form-group">
+                <label class="field-label">Unit ID</label>
+                <input type="text" id="add-uid" placeholder="e.g. TS-02" required />
+              </div>
+              <div class="form-group">
+                <label class="field-label">Barcode</label>
+                <input type="text" id="add-bc" placeholder="e.g. BC-TS-002" required />
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Add to inventory</button>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleAddTool(e) {
+      e.preventDefault();
+      const name = document.getElementById("add-name").value.trim();
+      const cat = document.getElementById("add-cat").value;
+      const feeClass = document.getElementById("add-fee").value;
+      const val = Number(document.getElementById("add-val").value) || 50;
+      const isKit = document.getElementById("add-kit").checked;
+      const uid = document.getElementById("add-uid").value.trim().toUpperCase();
+      const bc = document.getElementById("add-bc").value.trim().toUpperCase();
+
+      let existingType = state.toolTypes.find(t => t.name.toLowerCase() === name.toLowerCase());
+      if (!existingType) {
+        existingType = {
+          id: "T" + (state.toolTypes.length + 1),
+          name, category: cat, feeClass, replacementValue: val, isKit,
+          kitContents: isKit ? "Standard kit components (see label)" : "",
+          description: `${name} available for county library borrowing.`,
+          icon: "drill",
+          historicalLoans: 0
+        };
+        state.toolTypes.push(existingType);
+      }
+
+      state.units.push({ id: uid, toolTypeId: existingType.id, barcode: bc, status: "Available", note: "" });
+      ui.expandedInvGroups[existingType.id] = true;
+      saveState();
+      render();
+      showToast(`Added ${name} (${uid}) to inventory.`);
+    }
+
+    function openEditToolModal(toolTypeId) {
+      const t = getToolType(toolTypeId);
+      openModal(`
+        <h2 class="card-title">Edit Tool Type: ${escapeHtml(t.name)}</h2>
+        <form onsubmit="saveEditTool(event, '${t.id}')">
+          <div class="form-group">
+            <label class="field-label">Tool name</label>
+            <input type="text" id="edit-name" value="${escapeHtml(t.name)}" required />
+          </div>
+          <div class="form-group">
+            <label class="field-label">Replacement value ($)</label>
+            <input type="number" id="edit-val" value="${t.replacementValue}" required />
+          </div>
+          <div class="form-group">
+            <label class="field-label">Fee class</label>
+            <select id="edit-fee">
+              <option value="standard" ${t.feeClass === "standard" ? "selected" : ""}>Standard ($1/day)</option>
+              <option value="high" ${t.feeClass === "high" ? "selected" : ""}>High-demand ($3/day)</option>
+            </select>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function saveEditTool(e, toolTypeId) {
+      e.preventDefault();
+      const t = getToolType(toolTypeId);
+      t.name = document.getElementById("edit-name").value.trim();
+      t.replacementValue = Number(document.getElementById("edit-val").value) || t.replacementValue;
+      t.feeClass = document.getElementById("edit-fee").value;
+      saveState();
+      closeModal();
+      render();
+      showToast("Tool information updated.");
+    }
+
+    function openFlagOosModal(unitId) {
+      const u = getUnit(unitId);
+      openModal(`
+        <h2 class="card-title">Flag Out of Service (${escapeHtml(u.id)})</h2>
+        <p class="small muted">The waitlist remains unchanged; holds resume once marked back in service.</p>
+        <form onsubmit="confirmFlagOos(event, '${u.id}')">
+          <div class="form-group">
+            <label class="field-label">Maintenance / Damage Note</label>
+            <textarea id="oos-note" placeholder="e.g. Blade guard jammed, missing charger..." required></textarea>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Mark Out of Service</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function confirmFlagOos(e, unitId) {
+      e.preventDefault();
+      const u = getUnit(unitId);
+      u.status = "Out of service";
+      u.note = document.getElementById("oos-note").value.trim();
+      saveState();
+      closeModal();
+      render();
+      showToast(`Unit ${u.id} flagged Out of Service.`);
+    }
+
+    function markUnitInService(unitId) {
+      const u = getUnit(unitId);
+      u.status = "Available";
+      u.note = "";
+      promoteNextWaitlist(u.toolTypeId);
+      saveState();
+      render();
+      showToast(`Unit ${u.id} returned to service and marked Available.`);
+    }
+
+    function retireUnit(unitId) {
+      const u = getUnit(unitId);
+      if (u.status === "Checked out") return;
+      u.status = "Retired";
+      saveState();
+      render();
+      showToast(`Unit ${u.id} has been retired.`);
+    }
+
+    // --- STAFF RESERVATIONS & WAITLISTS (E6) ---
+    function renderStaffReservations() {
+      return `
+        <h1 class="page-title" style="margin-bottom:20px;">Reservations &amp; waitlists</h1>
+
+        <div class="grid-2" style="align-items:start;">
+          <div class="card">
+            <div class="card-title">Active holds &amp; waitlists (${state.reservations.length})</div>
+            ${state.reservations.length === 0 ? `<p class="small muted">No active reservations or waitlists.</p>` : `
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Tool</th><th>Patron</th><th>Status</th><th>Action</th></tr></thead>
+                  <tbody>
+                    ${state.reservations.map(r => `
+                      <tr>
+                        <td><strong>${escapeHtml(getToolType(r.toolTypeId).name)}</strong></td>
+                        <td>${escapeHtml(getPatron(r.patronId).name)}</td>
+                        <td>
+                          <span class="badge ${r.status === "Ready for pickup" ? "badge-green" : "badge-amber"}">${escapeHtml(r.status)}</span>
+                          ${r.pickupBy ? `<div class="small muted">By ${formatDateShort(r.pickupBy)}</div>` : ""}
+                        </td>
+                        <td><button class="btn btn-secondary btn-sm" onclick="cancelReservation('${r.id}')">Cancel</button></td>
+                      </tr>
+                    `).join("")}
+                  </tbody>
+                </table>
+              </div>
+            `}
+          </div>
+
+          <div class="card">
+            <div class="card-title">Reserve on behalf of patron</div>
+            <form onsubmit="staffCreateReservation(event)">
+              <div class="form-group">
+                <label class="field-label">Select Patron</label>
+                <select id="sres-patron">
+                  ${state.patrons.map(p => `<option value="${p.id}">${escapeHtml(p.name)} (${p.cardNumber})</option>`).join("")}
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="field-label">Select Tool Type</label>
+                <select id="sres-tool">
+                  ${state.toolTypes.filter(t => getUnitsForType(t.id).length > 0).map(t => {
+                    const av = getAvailableUnitsForType(t.id).length;
+                    return `<option value="${t.id}">${escapeHtml(t.name)} (${av > 0 ? av + " available" : "Waitlist"})</option>`;
+                  }).join("")}
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">Create reservation / add to waitlist</button>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    function staffCreateReservation(e) {
+      e.preventDefault();
+      const patronId = document.getElementById("sres-patron").value;
+      const toolTypeId = document.getElementById("sres-tool").value;
+      const avail = getAvailableUnitsForType(toolTypeId).length;
+      const status = avail > 0 ? "Ready for pickup" : "Waitlist";
+      state.reservations.push({
+        id: "R" + Date.now(),
+        patronId,
+        toolTypeId,
+        status,
+        createdAt: TODAY,
+        pickupBy: status === "Ready for pickup" ? addDays(TODAY, 3) : null
+      });
+      saveState();
+      render();
+      showToast(`Created ${status} entry for ${getPatron(patronId).name}.`);
+    }
+
+    // --- STAFF UNRETURNED TOOLS & PATRON ACCOUNTS / PAYMENTS (E7 + E8) ---
+    function renderStaffUnreturned() {
+      const overdue = state.loans.filter(isLoanOverdue);
+      return `
+        <h1 class="page-title" style="margin-bottom:20px;">Unreturned tools &amp; patron accounts</h1>
+
+        <div class="card">
+          <div class="card-title">Unreturned tools (${overdue.length})</div>
+          ${overdue.length === 0 ? `<p class="small muted">No unreturned/overdue tools right now.</p>` : `
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Patron</th><th>Tool</th><th>Due date</th><th>Days overdue</th><th>Accrued fee</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>
+                  ${overdue.map(l => {
+                    const p = getPatron(l.patronId);
+                    const t = getToolType(l.toolTypeId);
+                    const fee = computeLoanFeeDetails(l);
+                    return `
+                      <tr>
+                        <td><strong>${escapeHtml(p.name)}</strong></td>
+                        <td>${escapeHtml(t.name)}</td>
+                        <td>${formatDateShort(l.dueDate)}</td>
+                        <td>${fee.daysLate}</td>
+                        <td><strong>${formatMoney(fee.unpaid)}</strong></td>
+                        <td><span class="badge badge-red">Unreturned</span></td>
+                        <td><button class="btn btn-secondary btn-sm" onclick="navigate('staff_patron', {patronId:'${p.id}'})">Open patron account</button></td>
+                      </tr>
+                    `;
+                  }).join("")}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </div>
+
+        <div class="card">
+          <div class="card-title">All patron accounts (In-person fee payments)</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Patron</th><th>Library Card</th><th>Active Loans</th><th>Balance Owed</th><th>Action</th></tr></thead>
+              <tbody>
+                ${state.patrons.map(p => {
+                  const bal = getPatronOutstandingFees(p.id);
+                  return `
+                    <tr>
+                      <td><strong>${escapeHtml(p.name)}</strong></td>
+                      <td><code>${escapeHtml(p.cardNumber)}</code></td>
+                      <td>${getActiveLoansForPatron(p.id).length} of 5</td>
+                      <td>${bal > 0 ? `<strong style="color:var(--red-text);">${formatMoney(bal)}</strong>` : formatMoney(0)}</td>
+                      <td><button class="btn btn-secondary btn-sm" onclick="navigate('staff_patron', {patronId:'${p.id}'})">Open account</button></td>
+                    </tr>
+                  `;
+                }).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStaffPatronAccount() {
+      const p = getPatron(route.params.patronId) || state.patrons[0];
+      const balance = getPatronOutstandingFees(p.id);
+      const loans = getActiveLoansForPatron(p.id);
+
+      return `
+        <div style="margin-bottom:14px;">
+          <button class="link-btn small" onclick="navigate('staff_unreturned')">← Back to unreturned &amp; accounts</button>
+        </div>
+
+        <div class="page-header">
+          <h1 class="page-title">${escapeHtml(p.name)}</h1>
+          <div class="small muted">Card: <code>${escapeHtml(p.cardNumber)}</code> · Waiver signed ${formatDateShort(p.waiverDate)}</div>
+        </div>
+
+        <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div>
+            <div class="small muted">Outstanding fee balance</div>
+            <div class="stat-value">${formatMoney(balance)}</div>
+          </div>
+          <button class="btn btn-primary" ${balance <= 0 ? "disabled" : ""} onclick="openStaffRecordPaymentModal('${p.id}', ${balance})">Record in-person payment</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Active loans (${loans.length})</div>
+          ${loans.length === 0 ? `<p class="small muted">No active loans.</p>` : `
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Tool</th><th>Due</th><th>Status</th><th>Unpaid Fee</th></tr></thead>
+                <tbody>
+                  ${loans.map(l => {
+                    const fee = computeLoanFeeDetails(l);
+                    const od = isLoanOverdue(l);
+                    return `
+                      <tr>
+                        <td><strong>${escapeHtml(getToolType(l.toolTypeId).name)}</strong></td>
+                        <td>${formatDateShort(l.dueDate)}</td>
+                        <td>${od ? `<span class="badge badge-red">Unreturned</span>` : `<span class="badge badge-green">On loan</span>`}</td>
+                        <td>${formatMoney(fee.unpaid)}</td>
+                      </tr>
+                    `;
+                  }).join("")}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </div>
+
+        <div class="card">
+          <div class="card-title">Payment history</div>
+          ${p.payments.length === 0 ? `<p class="small muted">No payments recorded yet.</p>` : `
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Receipt</th><th>Date</th><th>Method</th><th>Amount</th></tr></thead>
+                <tbody>
+                  ${p.payments.map(pay => `
+                    <tr>
+                      <td><code>${escapeHtml(pay.id)}</code></td>
+                      <td>${formatDateShort(pay.date)}</td>
+                      <td>${escapeHtml(pay.method)}</td>
+                      <td>${formatMoney(pay.amount)}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function openStaffRecordPaymentModal(patronId, balance) {
+      openModal(`
+        <h2 class="card-title">Record In-Person Payment</h2>
+        <form onsubmit="handleStaffRecordPayment(event, '${patronId}')">
+          <div class="form-group">
+            <label class="field-label">Payment Amount ($)</label>
+            <input type="number" id="spay-amt" step="0.01" min="0.01" max="${balance.toFixed(2)}" value="${balance.toFixed(2)}" required />
+          </div>
+          <div class="form-group">
+            <label class="field-label">Payment Method</label>
+            <select id="spay-method">
+              <option>In person (Cash)</option>
+              <option>In person (Card)</option>
+              <option>In person (Check)</option>
+            </select>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save payment</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function handleStaffRecordPayment(e, patronId) {
+      e.preventDefault();
+      const amt = Number(document.getElementById("spay-amt").value);
+      const method = document.getElementById("spay-method").value;
+      recordPaymentForPatron(patronId, amt, method);
+      closeModal();
+      render();
+      showToast(`Recorded ${formatMoney(amt)} payment.`);
+    }
+
+    // --- STAFF REPORTS (E9) ---
+    function renderStaffReports() {
+      const tab = ui.staffReportTab;
+      let content = "";
+
+      if (tab === "checked_out") {
+        const active = state.loans.filter(l => !l.returnedDate);
+        content = `
+          <div class="card-title" style="margin-bottom:2px;">Currently checked out</div>
+          <div class="small muted" style="margin-bottom:14px;">Generated ${formatDateShort(TODAY)} · ${active.length} active loans</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Patron</th><th>Tool</th><th>Barcode</th><th>Checked out</th><th>Due date</th><th>Status</th></tr></thead>
+              <tbody>
+                ${active.map(l => `
+                  <tr>
+                    <td><strong>${escapeHtml(getPatron(l.patronId).name)}</strong></td>
+                    <td>${escapeHtml(getToolType(l.toolTypeId).name)}</td>
+                    <td><code>${escapeHtml(getUnit(l.unitId).barcode)}</code></td>
+                    <td>${formatDateShort(l.checkoutDate)}</td>
+                    <td>${formatDateShort(l.dueDate)}</td>
+                    <td>${isLoanOverdue(l) ? `<span class="badge badge-red">Unreturned</span>` : `<span class="badge badge-green">On loan</span>`}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (tab === "overdue") {
+        const overdue = state.loans.filter(isLoanOverdue);
+        content = `
+          <div class="card-title" style="margin-bottom:2px;">Overdue tools</div>
+          <div class="small muted" style="margin-bottom:14px;">Generated ${formatDateShort(TODAY)}</div>
+          ${overdue.length === 0 ? `<p class="small muted">No overdue tools!</p>` : `
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Patron</th><th>Tool</th><th>Due date</th><th>Days overdue</th><th>Accrued fee</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>
+                  ${overdue.map(l => {
+                    const p = getPatron(l.patronId);
+                    const fee = computeLoanFeeDetails(l);
+                    return `
+                      <tr>
+                        <td><strong>${escapeHtml(p.name)}</strong></td>
+                        <td>${escapeHtml(getToolType(l.toolTypeId).name)}</td>
+                        <td>${formatDateShort(l.dueDate)}</td>
+                        <td>${fee.daysLate}</td>
+                        <td>${formatMoney(fee.unpaid)}</td>
+                        <td><span class="badge badge-red">Unreturned</span></td>
+                        <td><button class="btn btn-secondary btn-sm" onclick="navigate('staff_patron', {patronId:'${p.id}'})">Open patron account</button></td>
+                      </tr>
+                    `;
+                  }).join("")}
+                </tbody>
+              </table>
+            </div>
+          `}
+        `;
+      } else if (tab === "repair") {
+        const oos = state.units.filter(u => u.status === "Out of service");
+        content = `
+          <div class="card-title" style="margin-bottom:2px;">Tools in repair</div>
+          <div class="small muted" style="margin-bottom:14px;">Generated ${formatDateShort(TODAY)}</div>
+          ${oos.length === 0 ? `<p class="small muted">All tools are currently in service.</p>` : `
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Tool</th><th>Unit ID</th><th>Barcode</th><th>Maintenance notes</th><th>Action</th></tr></thead>
+                <tbody>
+                  ${oos.map(u => `
+                    <tr>
+                      <td><strong>${escapeHtml(getToolType(u.toolTypeId).name)}</strong></td>
+                      <td><code>${escapeHtml(u.id)}</code></td>
+                      <td><code>${escapeHtml(u.barcode)}</code></td>
+                      <td>${escapeHtml(u.note || "No notes provided")}</td>
+                      <td><button class="btn btn-primary btn-sm" onclick="markUnitInService('${u.id}')">Mark in service</button></td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
+          `}
+        `;
+      } else if (tab === "most_borrowed") {
+        const ranked = [...state.toolTypes].map(t => {
+          const activeCount = state.loans.filter(l => l.toolTypeId === t.id && !l.returnedDate).length;
+          return { tool: t, totalLoans: (t.historicalLoans || 0) + activeCount };
+        }).sort((a, b) => b.totalLoans - a.totalLoans);
+
+        content = `
+          <div class="card-title" style="margin-bottom:2px;">Most borrowed tools</div>
+          <div class="small muted" style="margin-bottom:14px;">Generated ${formatDateShort(TODAY)} · Ranked by total loans</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Rank</th><th>Tool type</th><th>Category</th><th>Total loans</th></tr></thead>
+              <tbody>
+                ${ranked.map((r, i) => `
+                  <tr>
+                    <td><strong>#${i + 1}</strong></td>
+                    <td><strong>${escapeHtml(r.tool.name)}</strong></td>
+                    <td>${escapeHtml(r.tool.category)}</td>
+                    <td>${r.totalLoans}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      return `
+        <h1 class="page-title" style="margin-bottom:20px;">Reports</h1>
+
+        <div class="grid-4" style="margin-bottom:20px;">
+          <button class="report-tab ${tab === 'checked_out' ? 'active' : ''}" onclick="ui.staffReportTab='checked_out'; render();">
+            <div class="report-tab-title">Currently checked out</div>
+            <div class="small muted">All active loans</div>
+          </button>
+          <button class="report-tab ${tab === 'overdue' ? 'active' : ''}" onclick="ui.staffReportTab='overdue'; render();">
+            <div class="report-tab-title">Overdue</div>
+            <div class="small muted">All unreturned loans</div>
+          </button>
+          <button class="report-tab ${tab === 'repair' ? 'active' : ''}" onclick="ui.staffReportTab='repair'; render();">
+            <div class="report-tab-title">In repair</div>
+            <div class="small muted">All out of service tools, with notes</div>
+          </button>
+          <button class="report-tab ${tab === 'most_borrowed' ? 'active' : ''}" onclick="ui.staffReportTab='most_borrowed'; render();">
+            <div class="report-tab-title">Most borrowed</div>
+            <div class="small muted">Tool types ranked by number of loans</div>
+          </button>
+        </div>
+
+        <div class="card">${content}</div>
+      `;
+    }
+
+    /*************************************************************************
+     * MASTER RENDER LOOP
+     *************************************************************************/
+    function render() {
+      renderTopbar();
+      const app = document.getElementById("app");
+      const pages = {
+        landing: renderLanding,
+        login: renderLogin,
+        register: renderRegister,
+        waiver: renderWaiver,
+        staff_login: renderStaffLogin,
+        patron_dashboard: renderPatronDashboard,
+        patron_browse: renderPatronBrowse,
+        patron_tool: renderPatronToolDetail,
+        patron_loans: renderPatronLoans,
+        patron_reservations: renderPatronReservations,
+        patron_fees: renderPatronFees,
+        staff_home: renderStaffHome,
+        staff_checkout: renderStaffCheckout,
+        staff_return: renderStaffReturn,
+        staff_renewals: renderStaffRenewals,
+        staff_inventory: renderStaffInventory,
+        staff_reservations: renderStaffReservations,
+        staff_unreturned: renderStaffUnreturned,
+        staff_patron: renderStaffPatronAccount,
+        staff_reports: renderStaffReports
+      };
+
+      const fn = pages[route.page] || renderLanding;
+      app.innerHTML = fn();
+    }
+
+    window.addEventListener("hashchange", () => { initFromHash(); render(); });
+    initFromHash();
+    render();
+  </script>
+</body>
+</html>
